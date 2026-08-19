@@ -15,9 +15,10 @@ __pycache__/
 .venv/
 venv/
 
-# node (por si algo del portfolio se mete acá)
+# node (in case portfolio-site tooling ends up in here)
 node_modules/
 
 # OS/editor cruft
 .DS_Store
 Thumbs.db
+CLAUDE.md
