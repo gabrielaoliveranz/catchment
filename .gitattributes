@@ -1,0 +1,13 @@
+* text=auto eol=lf
+
+*.pbix binary
+*.xlsx binary
+*.xls binary
+*.zip binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.db binary
+*.sqlite binary
+*.woff2 binary

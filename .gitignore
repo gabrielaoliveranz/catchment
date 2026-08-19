@@ -1,0 +1,23 @@
+# secrets
+.env
+.env.*
+*.secrets
+
+# raw/processed data (heavy, reproducible from docs/data_sources.md)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# node (por si algo del portfolio se mete acá)
+node_modules/
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db
