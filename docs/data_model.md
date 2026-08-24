@@ -76,3 +76,41 @@ why, is a separate decision: see `METHODOLOGY.md`.)
   original schema — may be redundant with attributes already on
   `dim_school` once we look at the real cardinality. Revisit once the
   DDL is being written.
+
+## Columns selected from the roll workbook (`2-Student-rolls-by-school-2010-2025-v2.xlsx`)
+
+Same test as `directory.csv`: does a question (1–9) or the grain itself
+need it?
+
+**In:** School ID (filtered, excludes `-1` and `99999`), School Name,
+Decile, Type, Authority, Regional Council, Education Region, TA, Year 1–15
+(→ `dim_year_level`), Ethnicity Level 1 & Prioritised (7 categories),
+Ethnicity Level 1 Total Response (7 categories) — both bases loaded into
+`fact_roll`, distinguished by `dim_ethnicity.basis`, **never summed
+across bases in the same query.**
+
+**Out (no question needs them today):** school-level Gender, Female/Male
+headcount, Funding type breakdown, Age 5–22+, NCEA Level 1–5, Māori
+Language Immersion.
+
+**Decision: Ethnicity Level 1 only, not Level 2.** Level 2 (~18 fine
+subcategories, e.g. Samoan/Tongan/Chinese/Indian) is available in the
+same source but not loaded. Reasoning, deliberately different from the
+"keep ethnicity in the grain at all" decision above: that decision was
+irreversible if skipped (would require reprocessing the raw zip from
+scratch). This one isn't — the raw source stays in `data/raw/` regardless,
+so Level 2 can be added later from the same file with no data loss. At
+this project's regional scope (Bay of Plenty–Waiariki), Level 2 headcounts
+per school-year-level would often be very small, adding noise and
+`UNPIVOT` complexity with no question currently asking for that
+resolution.
+
+`Total` is not stored as a schema column — it's used as a load-time
+validation check: the sum of loaded rows for a school-year must equal
+this figure, or the load has a bug.
+
+Still open: whether `Decile`/`Regional Council`/`TA`/`Education Region`
+in this file agree with `directory.csv` for the same school (cross-check
+before finalising `dim_school`), and whether `Decile` belongs on
+`dim_school` at all given it changes over time and was retired in 2023 —
+revisit when writing the DDL.
