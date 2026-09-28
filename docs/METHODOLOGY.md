@@ -273,3 +273,34 @@ the data. Both facts are true, they just answer different questions.
 2019-2025.
 
 Source: https://www.educationcounts.govt.nz/data-services/guidelines/school-equity-index-bands-and-groups
+
+## `definition` — sub-classification only assigned to specific school types (source #3)
+
+**Query:**
+
+    SELECT school_type, COUNT(*) AS total_count, COUNT(definition) AS definition
+    FROM staging_directory
+    GROUP BY school_type
+    ORDER BY school_type;
+
+**Result:** 40 of 2578 rows have a non-null `definition`, concentrated almost
+entirely in `school_type = 'Specialist School'` (36 of 38), with a handful of
+isolated cases under `Secondary (Year 7-15)` (1 of 118) and
+`Secondary (Year 9-15)` (3 of 236) — all 4 tagged "Secondary Māori Boarding
+School".
+
+**The 2 Specialist School exceptions:**
+
+    SELECT school_type, definition, school_name, status
+    FROM staging_directory
+    WHERE school_type = 'Specialist School' AND definition IS NULL;
+
+Both rows are schools with `status = 'Proposed'` and a future opening date
+(Te Ohanui / Palmerston North Specialist School, 2027-07-19; Drury
+Specialist School, 2028-02-08) — not yet operating, so the Ministry hasn't
+assigned them a sub-classification yet.
+
+## `takiwa` — fully NULL across all rows (source #3)
+
+Same pattern as `student_age` in source #2: 0 of 2578 rows have a value.
+Not a load error — confirmed against the raw CSV. Excluded from analysis.
