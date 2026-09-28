@@ -184,3 +184,92 @@ depending on which query produced it — **the whole project is scoped to
 2016–2025**. Consistent grain across every year analysed, for every
 question, beats four extra years of data that only some of the nine
 questions could actually use.
+
+## `BULK INSERT` on the year-level/ethnicity CSV (source #2): three failures, one file
+
+Loading `10-Machine Readable-Roll by Funding year level ethnicity 2014-2025.csv`
+(709,153 rows) into `staging_roll_by_year_level` failed three times in a row,
+each fix exposing the next cause. Recorded here so the debugging isn't repeated.
+
+1. `Msg 7301, State 6` ("Cannot obtain the required interface IID_IColumnsInfo")
+   with `FORMAT='CSV'` + `FIELDQUOTE='"'` + `ROWTERMINATOR='\r\n'`.
+   Compatibility level (170) checked and ruled out as the cause.
+   Fix tried: `ROWTERMINATOR = '\n'`.
+2. Error persisted but changed to `State 2` — a different state means a
+   different underlying cause, not a lingering instance of the first one.
+   Ruled out an instance-level bug (SQL Server 2025 RTM, build
+   17.0.1000.7) by loading a 1,000-row sample successfully. Ruled out file
+   corruption via two independent checks: a PowerShell strict UTF-8
+   validity pass (709,154 lines, zero invalid bytes) and a strict CSV
+   parse via `Import-Csv` (709,153 rows, zero parse errors).
+3. Real cause: no `BATCHSIZE`. Without it, `BULK INSERT` treats the whole
+   file as one single transaction, and the instance couldn't sustain that
+   as one unit at 709k rows. Fix: `BATCHSIZE = 50000`.
+
+Load succeeded with all three fixes combined: 709,153 rows landed in
+`staging_roll_by_year_level`.
+
+**Open verification, not yet done:** the file's actual line ending is
+`\r\n` (confirmed by inspecting the raw bytes directly — not assumed),
+but the working load uses `ROWTERMINATOR = '\n'` only. That means each
+row's real terminator is being split as `\r` (kept as data) + `\n`
+(consumed as the terminator) — the trailing `\r` may be landing at the
+end of the last column (`equi_group`) of every row. Before trusting this
+table for anything downstream, check for a trailing `\r` in the last
+column, e.g. compare `LEN(equi_group)` / `ASCII(RIGHT(equi_group, 1))`
+against what's expected (ASCII 13 = `\r` would confirm it). Not yet run —
+next session's first step.
+
+## `directory.csv` byte-level checks (confirmed via `Format-Hex`, not assumed)
+
+- Starts with a UTF-8 BOM (`EF BB BF`) — visible as the mojibake `ï»¿` if
+  the file is read with a non-UTF-8-aware tool/codepage. Different from
+  source #2's CSV, which has no BOM (see the BULK INSERT section above).
+- Line ending is `\r\n` (confirmed: `0D 0A` immediately after the last
+  populated cell, e.g. offset `0x4E`-`0x4F`), same convention as source #2.
+
+## Trailing `\r` check on `equi_group` — resolved, no bug
+
+Checked with `SELECT TOP (20) equi_group, LEN(equi_group), ASCII(RIGHT(equi_group, 1)) FROM staging_roll_by_year_level`,
+once with no filter (returned clean `NULL` for all three columns — no
+phantom character on an empty field) and once with `WHERE equi_group IS
+NOT NULL` (returned e.g. `'More'`, `LEN = 4`, `ASCII(last char) = 101` —
+matches "More" exactly, no extra byte). Despite `BULK INSERT` using
+`ROWTERMINATOR = '\n'` against a file whose real line ending is `\r\n`,
+no stray `\r` landed in the last column. The open item from the BULK
+INSERT section above is closed — the load is clean on this front.
+
+## `equi_band`/`equi_group` null pattern by year — corrects the 2023 assumption in PLAN.md
+
+Checked with:
+
+```sql
+SELECT year_as_at_1_july,
+       COUNT(*) AS total_count,
+       COUNT(equi_band) AS equi_band,
+       COUNT(equi_group) AS equi_group
+FROM staging_roll_by_year_level
+GROUP BY year_as_at_1_july
+ORDER BY year_as_at_1_july;
+```
+
+Result: `equi_band`/`equi_group` are `0` (fully NULL) for 2016, 2017 and
+2018, and exactly equal to `total_count` (fully populated) for every
+year from 2019 through 2025. The boundary is 2019, not 2023.
+
+PLAN.md's trap #1 said decile stopped being used for reporting after
+2022, replaced by the Equity Index — that's still correct, and confirmed
+against the source (Education Counts, "School Equity Index Bands and
+Groups" guideline page: "Equity Index Bands and Groups will be
+introduced for socioeconomic reporting on schools for data from 2023 and
+beyond"). But the same source also says: "to allow comparison, the
+Ministry uses the Equity Index for 2023 funding with education data from
+2019-2022" — the Ministry calculated it retroactively back to 2019, four
+years before it became the official measure. 2023 is when EQI became
+official; 2019 is when this column actually starts being populated in
+the data. Both facts are true, they just answer different questions.
+
+**Corrected boundary for this table:** NULL for 2016-2018, populated for
+2019-2025.
+
+Source: https://www.educationcounts.govt.nz/data-services/guidelines/school-equity-index-bands-and-groups
