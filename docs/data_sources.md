@@ -27,3 +27,22 @@ Education Counts pages and extracting the literal `href`s. They were
 verified by Gaby actually downloading each file.
 
 Still pending: SHA256 hash and byte size for each downloaded file.
+
+## Licence
+
+Confirmed 2026 against `educationcounts.govt.nz/site-info/privacy`: Ministry
+of Education open data (sources 1-5 above) is released under **CC BY 4.0
+International** — commercial reuse permitted with attribution. Checked
+directly against the primary source, not assumed from a secondary one.
+
+## Note on source #4b scope
+
+Only 2010-2025 (16 of the 22 yearly workbooks) was loaded into staging —
+2004-2009 use 3 different, incompatible sheet structures across just 6
+years and were left out as a documented gap. Within the loaded years, 5
+of the 6 sheet types per workbook were loaded (New, Closures, Mergers,
+Name Changes, School Type Changes); **Definition-Authority Changes was
+not loaded** after a severe Excel "used range" performance problem (row
+counts exceeded 30 million before cleanup) and a check that none of the
+planned analyses need it. Full reasoning for both decisions is in
+`METHODOLOGY.md`.
