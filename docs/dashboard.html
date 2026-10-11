@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CATCHMENT: Bay of Plenty-Waiariki</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page:           #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --good:           #0ca30c;
+    --warning:        #fab219;
+    --serious:        #ec835a;
+    --critical:       #d03b3b;
+    --series-1:       #2a78d6;
+    --series-2:       #eb6834;
+    --series-3:       #1baf7a;
+    --series-4:       #eda100;
+    --series-5:       #e87ba4;
+    --series-6:       #008300;
+    --series-7:       #6250d6;
+    --series-8:       #e34948;
+    --div-pos:        #2a78d6;
+    --div-neg:        #e34948;
+    --div-mid:        #f0efec;
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page:           #0d0d0d;
+    --text-primary:   #f0efec;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --gridline:       #2c2c2a;
+    --baseline:       #383835;
+    --border:         rgba(255,255,255,0.10);
+    --good:           #0ca30c;
+    --warning:        #fab219;
+    --serious:        #ec835a;
+    --critical:       #e66767;
+    --series-1:       #3987e5;
+    --series-2:       #d95926;
+    --series-3:       #199e70;
+    --series-4:       #c98500;
+    --series-5:       #d55181;
+    --series-6:       #008300;
+    --series-7:       #9085e9;
+    --series-8:       #e66767;
+    --div-pos:        #3987e5;
+    --div-neg:        #e66767;
+    --div-mid:        #383835;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page:           #0d0d0d;
+      --text-primary:   #f0efec;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+      --critical:       #e66767;
+      --series-1:       #3987e5;
+      --series-2:       #d95926;
+      --series-3:       #199e70;
+      --series-4:       #c98500;
+      --series-5:       #d55181;
+      --series-6:       #008300;
+      --series-7:       #9085e9;
+      --series-8:       #e66767;
+      --div-pos:        #3987e5;
+      --div-neg:        #e66767;
+      --div-mid:        #383835;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--page);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 20px 64px; }
+  header.hero {
+    position: relative; overflow: hidden; border-radius: 14px;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 16px; padding: 28px 24px; border: 1px solid var(--border);
+    margin-bottom: 24px; flex-wrap: wrap;
+  }
+  header.hero .hero-bg {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    z-index: 0; opacity: 0.9;
+  }
+  header.hero .hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(100deg, var(--page) 0%, color-mix(in srgb, var(--page) 55%, transparent) 55%, color-mix(in srgb, var(--page) 15%, transparent) 100%);
+    z-index: 1;
+  }
+  header.hero > div, header.hero > button { position: relative; z-index: 2; }
+  header.hero > div.photo-credit {
+    position: absolute; right: 10px; bottom: 8px; z-index: 2;
+    font-size: 10px; color: var(--text-muted); background: color-mix(in srgb, var(--surface-1) 70%, transparent);
+    padding: 2px 7px; border-radius: 6px;
+  }
+  .photo-credit a { color: inherit; }
+  header.hero h1 { font-size: 26px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  header.hero p.sub { margin: 0; color: var(--text-secondary); font-size: 14.5px; max-width: 640px; }
+  .theme-toggle {
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
+    border-radius: 8px; padding: 7px 12px; font-size: 13px; cursor: pointer; white-space: nowrap;
+  }
+  .theme-toggle:hover { color: var(--text-primary); }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 28px; }
+  .kpi {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 16px 14px;
+  }
+  .kpi .label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+  .kpi .value { font-size: 26px; font-weight: 600; letter-spacing: -0.01em; }
+  .kpi .value.pos { color: var(--good); }
+  .kpi .value.neg { color: var(--critical); }
+  .kpi .note { font-size: 11.5px; color: var(--text-muted); margin-top: 4px; }
+
+  section { margin-bottom: 36px; }
+  section h2 { font-size: 17px; margin: 0 0 4px; }
+  section p.desc { margin: 0 0 14px; color: var(--text-secondary); font-size: 13.5px; max-width: 760px; }
+  .panel {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 18px;
+  }
+  .takeaways { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+  .takeaways li { display: flex; gap: 12px; align-items: flex-start; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary); }
+  .takeaways .num {
+    flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%; background: var(--series-1); color: #fff;
+    font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; margin-top: 1px;
+  }
+  .takeaways strong { color: var(--text-primary); }
+  .chart-callout text { fill: var(--text-secondary); font-size: 11px; font-weight: 600; }
+  .chart-callout rect { fill: var(--surface-1); opacity: 0.92; }
+  .chart-callout line { stroke: var(--text-muted); stroke-width: 1; stroke-dasharray: 2 2; }
+  .two-col { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; align-items: start; }
+
+  svg.chart { width: 100%; height: auto; overflow: visible; font-family: inherit; }
+  .axis-label { fill: var(--text-muted); font-size: 10.5px; }
+  .gridline { stroke: var(--gridline); stroke-width: 1; }
+  .baseline { stroke: var(--baseline); stroke-width: 1; }
+  .hover-line { stroke: var(--text-muted); stroke-width: 1; stroke-dasharray: 2 3; pointer-events: none; }
+  .tooltip {
+    position: absolute; pointer-events: none; background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px; font-size: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    color: var(--text-primary); white-space: nowrap; z-index: 5; opacity: 0; transition: opacity .08s;
+  }
+  .tooltip .t-title { color: var(--text-muted); font-size: 10.5px; margin-bottom: 3px; }
+  .tooltip .t-row { display: flex; align-items: center; gap: 6px; }
+  .swatch { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-top: 12px; font-size: 12px; color: var(--text-secondary); }
+  .legend .item { display: flex; align-items: center; gap: 6px; }
+
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.data-table th, table.data-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--gridline); }
+  table.data-table th { color: var(--text-muted); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: .02em; cursor: pointer; position: sticky; top: 0; background: var(--surface-1); }
+  table.data-table th:hover { color: var(--text-primary); }
+  table.data-table td.num, table.data-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.data-table tbody tr:hover { background: var(--page); }
+  .table-scroll { max-height: 420px; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; }
+  .search-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .search-row input {
+    flex: 1; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--page); color: var(--text-primary); font-size: 13px;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600;
+    padding: 2px 7px; border-radius: 99px; white-space: nowrap;
+  }
+  .badge.critical { color: var(--critical); background: color-mix(in srgb, var(--critical) 15%, transparent); }
+  .badge.good { color: var(--good); background: color-mix(in srgb, var(--good) 15%, transparent); }
+  .delta.pos { color: var(--good); }
+  .delta.neg { color: var(--critical); }
+
+  footer.notes {
+    margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border);
+    font-size: 12.5px; color: var(--text-muted); line-height: 1.6;
+  }
+  footer.notes h3 { font-size: 13px; color: var(--text-secondary); margin: 0 0 8px; }
+  footer.notes ul { margin: 0 0 16px; padding-left: 18px; }
+
+  @media (max-width: 860px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <img class="hero-bg" id="heroImg" src="header.jpg" alt="" onerror="this.style.display='none'; document.getElementById('photoCredit').style.display='none';">
+    <div class="hero-overlay"></div>
+    <div class="photo-credit" id="photoCredit">Photo: <a href="https://unsplash.com/photos/classroom-table-with-blue-chairs-K1-JVKnKGZc" target="_blank" rel="noopener">Far Chinberdiev</a> / Unsplash</div>
+    <div>
+      <h1>CATCHMENT: Bay of Plenty-Waiariki</h1>
+      <p class="sub">School roll capacity pressure in the Bay of Plenty-Waiariki region, New Zealand. Ministry of Education (MoE) data, 189 schools, 2010–2025.</p>
+    </div>
+    <button class="theme-toggle" id="themeToggle">Dark mode</button>
+  </header>
+
+  <section class="at-a-glance">
+    <h2>At a glance</h2>
+    <p class="desc">Four things the numbers below say about the region, before you dig into the charts.</p>
+    <div class="panel">
+      <ol class="takeaways">
+        <li><span class="num">1</span><span>The region's roll grew <strong>17% since 2010</strong> (55,287 &rarr; 64,933), but that growth has flattened out: 2025 was essentially flat on 2024 (&minus;0.1%), after a dip in 2022 and a strong 2023&ndash;24 rebound.</span></li>
+        <li><span class="num">2</span><span>Almost all of that growth is <strong>one city</strong>. Tauranga City alone added 7,233 students since 2010, about three-quarters of the region's entire net gain, while the other six TAs combined grew only slightly.</span></li>
+        <li><span class="num">3</span><span>The capacity pressure signal is <strong>rising fast</strong>: schools sitting at or above their own historical-maximum roll went from 6 in 2022 to 35 in 2025, nearly 1 in 5 schools in the region. (This is a proxy, not a measured shortage; see the note below the tables.)</span></li>
+        <li><span class="num">4</span><span>Cohort retention is <strong>mixed</strong>. Tracking the Year 5 (2020) cohort into Year 6 (2021), 64 of 151 schools (42%) show a net decline, concentrated in smaller rural and kaupapa M&#257;ori schools.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <section>
+    <h2>Region-wide total roll</h2>
+    <p class="desc">Sum of roll across the 189 schools in the region by year, with a 3-year moving average to smooth out year-to-year noise. The dip in 2022 and the flat finish in 2025 are the two moments worth a second look.</p>
+    <div class="panel">
+      <div id="trendChart"></div>
+      <div class="legend">
+        <span class="item"><span class="swatch" style="background:var(--series-1)"></span>Total roll</span>
+        <span class="item"><span class="swatch" style="background:var(--text-muted)"></span>3-year moving average</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Composition by territorial authority</h2>
+    <p class="desc">Almost all of the region-wide growth above is concentrated in one place. Roll stacked by TA over time, who makes up the regional total and how that composition shifts.</p>
+    <div class="panel">
+      <div id="taChart"></div>
+      <div class="legend" id="taLegend"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Fastest growth vs. steepest decline (latest year)</h2>
+    <p class="desc">Zooming from territorial authorities down to individual schools: most recent year-over-year change per school, the 10 schools that grew the most and the 10 that fell the most across the whole region.</p>
+    <div class="panel">
+      <div id="growthChart"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Capacity pressure signal (proxy)</h2>
+    <p class="desc">That growth is now showing up as pressure on individual schools. Schools whose 2025 roll is at or above their own historical maximum (2010&ndash;2025). <strong>This is a proxy, not a real measurement of physical capacity</strong>: the MoE dataset does not publish classroom capacity. A school with only a few years of data trivially shows up "at its maximum".</p>
+    <div class="panel">
+      <div class="search-row"><input type="text" id="pressureSearch" placeholder="Search school or TA&hellip;"></div>
+      <div class="table-scroll">
+        <table class="data-table" id="pressureTable">
+          <thead><tr>
+            <th data-key="school_name">School</th>
+            <th data-key="territorial_authority">TA</th>
+            <th class="num" data-key="roll_year">Year</th>
+            <th class="num" data-key="total_students">Roll</th>
+            <th class="num" data-key="historical_max">Historical max</th>
+            <th class="num" data-key="pct_of_historical_max">% of max</th>
+            <th class="num" data-key="n_years_available">Years of data</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Cohort progression: Year 5 (2020) &rarr; Year 6 (2021)</h2>
+    <p class="desc">Beyond growth and capacity, a third lens: are the students who start at a school actually staying? Retention/leakage per school for the cohort that was in Year 5 in 2020 and should be in Year 6 in 2021. Regional average: <strong id="cohortAvg"></strong>. <strong id="cohortNeg"></strong> schools show a decline. Note: this source counts ethnicity as "total response", so the absolute counts are inflated equally on both sides, the retention ratio is valid, the absolute counts are not real headcounts.</p>
+    <div class="panel">
+      <div class="search-row"><input type="text" id="cohortSearch" placeholder="Search school or TA&hellip;"></div>
+      <div class="table-scroll">
+        <table class="data-table" id="cohortTable">
+          <thead><tr>
+            <th data-key="school_name">School</th>
+            <th data-key="territorial_authority">TA</th>
+            <th class="num" data-key="year5_2020_count">Year 5 2020</th>
+            <th class="num" data-key="year6_2021_count">Year 6 2021</th>
+            <th class="num" data-key="change_pct">Change %</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>All schools: full view</h2>
+    <p class="desc">2025 snapshot per school: roll, year-over-year change, moving average and % of own historical maximum.</p>
+    <div class="panel">
+      <div class="search-row"><input type="text" id="schoolSearch" placeholder="Search school or TA&hellip;"></div>
+      <div class="table-scroll">
+        <table class="data-table" id="schoolTable">
+          <thead><tr>
+            <th data-key="school_name">School</th>
+            <th data-key="territorial_authority">TA</th>
+            <th class="num" data-key="total_students">2025 roll</th>
+            <th class="num" data-key="change_pct">YoY %</th>
+            <th class="num" data-key="moving_avg_3yr">3yr avg</th>
+            <th class="num" data-key="pct_of_historical_max">% of max</th>
+            <th>Status</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <footer class="notes">
+    <h3>Methodology and caveats</h3>
+    <ul>
+      <li>Scope: region <code>education_region = 'Bay of Plenty, Waiariki'</code>, 7 territorial authorities (Kawerau, &Omacr;p&omacr;tiki, Rotorua, Taupo, Tauranga City, Western Bay of Plenty, Whakatane), 189 schools.</li>
+      <li>Roll totals come from <code>staging_student_rolls</code> (MoE rolls, school+year grain, 2010&ndash;2025), not <code>fact_roll</code>. We confirmed empirically that <code>fact_roll</code>'s ethnicity breakdown is "total response" (a student can be counted under more than one ethnic group): summing across ethnicity overstates the real roll by roughly 2x. The one exception is cohort progression, which needs <code>fact_roll</code> for its year-level breakdown.</li>
+      <li>The capacity pressure signal is a <strong>proxy</strong> (current roll vs. a school's own historical maximum), not a real measurement of physical classroom capacity.</li>
+      <li>Data source: NZ Ministry of Education (Education Counts). CATCHMENT project by Gabriela Olivera. See <code>docs/METHODOLOGY.md</code> in the repo for full detail.</li>
+    </ul>
+  </footer>
+
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const DATA = {"latest_year": 2025, "n_schools": 189, "region_latest_total": 64933, "region_yoy_pct": -0.1, "n_at_capacity_latest": 35, "region_trend": [{"year": 2010, "total": 55287, "n_schools": 174, "moving_avg_3yr": 55287.0}, {"year": 2011, "total": 55294, "n_schools": 176, "moving_avg_3yr": 55290.5}, {"year": 2012, "total": 55645, "n_schools": 178, "moving_avg_3yr": 55408.7}, {"year": 2013, "total": 56589, "n_schools": 180, "moving_avg_3yr": 55842.7}, {"year": 2014, "total": 57259, "n_schools": 180, "moving_avg_3yr": 56497.7}, {"year": 2015, "total": 58263, "n_schools": 182, "moving_avg_3yr": 57370.3}, {"year": 2016, "total": 59795, "n_schools": 183, "moving_avg_3yr": 58439.0}, {"year": 2017, "total": 60878, "n_schools": 184, "moving_avg_3yr": 59645.3}, {"year": 2018, "total": 61481, "n_schools": 184, "moving_avg_3yr": 60718.0}, {"year": 2019, "total": 62303, "n_schools": 187, "moving_avg_3yr": 61554.0}, {"year": 2020, "total": 63324, "n_schools": 187, "moving_avg_3yr": 62369.3}, {"year": 2021, "total": 63781, "n_schools": 188, "moving_avg_3yr": 63136.0}, {"year": 2022, "total": 62662, "n_schools": 189, "moving_avg_3yr": 63255.7}, {"year": 2023, "total": 63868, "n_schools": 189, "moving_avg_3yr": 63437.0}, {"year": 2024, "total": 65008, "n_schools": 189, "moving_avg_3yr": 63846.0}, {"year": 2025, "total": 64933, "n_schools": 189, "moving_avg_3yr": 64603.0}], "top_growth": [{"territorial_authority": "Taupo District", "school_name": "Rangitaiki School", "latest_year": 2025, "total_students": 15, "growth_pct": 50.0, "rank_in_ta": 1}, {"territorial_authority": "Ōpōtiki District", "school_name": "Te Kura o Tōrere", "latest_year": 2025, "total_students": 31, "growth_pct": 34.8, "rank_in_ta": 1}, {"territorial_authority": "Kawerau District", "school_name": "Te Whata Tau o Putauaki", "latest_year": 2025, "total_students": 75, "growth_pct": 29.3, "rank_in_ta": 1}, {"territorial_authority": "Tauranga City", "school_name": "Te Whakatipuranga (Otumoetai TPU)", "latest_year": 2025, "total_students": 20, "growth_pct": 25.0, "rank_in_ta": 1}, {"territorial_authority": "Whakatane District", "school_name": "TKK Motuhake o Tawhiuau", "latest_year": 2025, "total_students": 89, "growth_pct": 21.9, "rank_in_ta": 1}, {"territorial_authority": "Rotorua District", "school_name": "Broadlands School", "latest_year": 2025, "total_students": 120, "growth_pct": 17.6, "rank_in_ta": 1}, {"territorial_authority": "Taupo District", "school_name": "Te Kura o Waitahanui", "latest_year": 2025, "total_students": 75, "growth_pct": 17.2, "rank_in_ta": 2}, {"territorial_authority": "Ōpōtiki District", "school_name": "Kutarere School", "latest_year": 2025, "total_students": 28, "growth_pct": 16.7, "rank_in_ta": 2}, {"territorial_authority": "Ōpōtiki District", "school_name": "Te Kura o Te Whānau-a-Apanui", "latest_year": 2025, "total_students": 193, "growth_pct": 16.3, "rank_in_ta": 3}, {"territorial_authority": "Whakatane District", "school_name": "St Joseph's Catholic School (Matata)", "latest_year": 2025, "total_students": 41, "growth_pct": 13.9, "rank_in_ta": 2}], "bottom_growth": [{"territorial_authority": "Ōpōtiki District", "school_name": "Te Kura Mana Māori o Maraenui", "latest_year": 2025, "total_students": 32, "growth_pct": -46.7, "rank_in_ta": 13}, {"territorial_authority": "Whakatane District", "school_name": "Te Mahoe School", "latest_year": 2025, "total_students": 32, "growth_pct": -37.3, "rank_in_ta": 33}, {"territorial_authority": "Rotorua District", "school_name": "Reporoa School", "latest_year": 2025, "total_students": 80, "growth_pct": -28.6, "rank_in_ta": 48}, {"territorial_authority": "Tauranga City", "school_name": "TKKM o Otepou", "latest_year": 2025, "total_students": 67, "growth_pct": -21.2, "rank_in_ta": 46}, {"territorial_authority": "Rotorua District", "school_name": "Kaingaroa Forest School", "latest_year": 2025, "total_students": 26, "growth_pct": -21.2, "rank_in_ta": 47}, {"territorial_authority": "Whakatane District", "school_name": "Te Kura Mana Maori O Matahi", "latest_year": 2025, "total_students": 12, "growth_pct": -20.0, "rank_in_ta": 32}, {"territorial_authority": "Rotorua District", "school_name": "Lake Rotoma School", "latest_year": 2025, "total_students": 24, "growth_pct": -20.0, "rank_in_ta": 46}, {"territorial_authority": "Western Bay of Plenty District", "school_name": "Matahui School", "latest_year": 2025, "total_students": 44, "growth_pct": -18.5, "rank_in_ta": 24}, {"territorial_authority": "Western Bay of Plenty District", "school_name": "Te Kura o Te Moutere O Matakana", "latest_year": 2025, "total_students": 23, "growth_pct": -17.9, "rank_in_ta": 23}, {"territorial_authority": "Taupo District", "school_name": "Tirohanga School", "latest_year": 2025, "total_students": 25, "growth_pct": -16.7, "rank_in_ta": 20}], "ta_list": ["Kawerau District", "Rotorua District", "Taupo District", "Tauranga City", "Western Bay of Plenty District", "Whakatane District", "Ōpōtiki District"], "ta_years": [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "ta_share_series": {"Kawerau District": [258, 245, 714, 1088, 1066, 1109, 1128, 1167, 1121, 1087, 1070, 1035, 1015, 1005, 1028, 1032], "Rotorua District": [13947, 13744, 13551, 13389, 13467, 13582, 13707, 13862, 13579, 13654, 13816, 13916, 13660, 13744, 13967, 13748], "Taupo District": [5480, 5491, 5532, 5607, 5682, 5856, 5983, 6113, 6233, 6301, 6308, 6365, 6207, 6234, 6350, 6420], "Tauranga City": [21357, 21742, 22021, 22402, 23030, 23636, 24458, 25073, 25792, 26349, 27228, 27604, 27239, 28163, 28519, 28590], "Western Bay of Plenty District": [5993, 5797, 5627, 5571, 5526, 5685, 5892, 6024, 6201, 6230, 6224, 6243, 6099, 6201, 6496, 6525], "Whakatane District": [6598, 6614, 6606, 6951, 6893, 6851, 7014, 7081, 6971, 7100, 7066, 7010, 6816, 6882, 7010, 6997], "Ōpōtiki District": [1654, 1661, 1594, 1581, 1595, 1544, 1613, 1558, 1584, 1582, 1612, 1608, 1626, 1639, 1638, 1621]}, "pressure_latest": [{"school_name": "ACG Tauranga", "territorial_authority": "Tauranga City", "roll_year": 2025, "total_students": 413, "historical_max": 413, "n_years_available": 11, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Aquinas College", "territorial_authority": "Tauranga City", "roll_year": 2025, "total_students": 827, "historical_max": 827, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Arataki School", "territorial_authority": "Tauranga City", "roll_year": 2025, "total_students": 512, "historical_max": 512, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Bethlehem College", "territorial_authority": "Tauranga City", "roll_year": 2025, "total_students": 2031, "historical_max": 2031, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Fairhaven School", "territorial_authority": "Western Bay of Plenty District", "roll_year": 2025, "total_students": 500, "historical_max": 500, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Galatea School", "territorial_authority": "Whakatane District", "roll_year": 2025, "total_students": 127, "historical_max": 127, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Gate Pa School", "territorial_authority": "Tauranga City", "roll_year": 2025, "total_students": 377, "historical_max": 377, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Ngakuru School", "territorial_authority": "Rotorua District", "roll_year": 2025, "total_students": 67, "historical_max": 67, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Ōtūmoetai College", "territorial_authority": "Tauranga City", "roll_year": 2025, "total_students": 1996, "historical_max": 1996, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Papamoa College", "territorial_authority": "Tauranga City", "roll_year": 2025, "total_students": 1790, "historical_max": 1790, "n_years_available": 15, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Rotorua School", "territorial_authority": "Rotorua District", "roll_year": 2025, "total_students": 410, "historical_max": 410, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Rotorua Specialist School - Te Kura Pūkenga o Rotorua", "territorial_authority": "Rotorua District", "roll_year": 2025, "total_students": 102, "historical_max": 102, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "St Mary's Catholic School (Tauranga)", "territorial_authority": "Tauranga City", "roll_year": 2025, "total_students": 458, "historical_max": 458, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Suzanne Aubert Catholic School", "territorial_authority": "Tauranga City", "roll_year": 2025, "total_students": 200, "historical_max": 200, "n_years_available": 5, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Taupo-nui-a-Tia College", "territorial_authority": "Taupo District", "roll_year": 2025, "total_students": 1235, "historical_max": 1235, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Tauranga Boys' College", "territorial_authority": "Tauranga City", "roll_year": 2025, "total_students": 2212, "historical_max": 2212, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Tauranga Special School", "territorial_authority": "Tauranga City", "roll_year": 2025, "total_students": 122, "historical_max": 122, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Te Kura Kaupapa Maori o Te Orini ki Ngati Awa", "territorial_authority": "Whakatane District", "roll_year": 2025, "total_students": 92, "historical_max": 92, "n_years_available": 11, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Te Kura o Hirangi", "territorial_authority": "Taupo District", "roll_year": 2025, "total_students": 271, "historical_max": 271, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Te Kura o Manunui", "territorial_authority": "Tauranga City", "roll_year": 2025, "total_students": 322, "historical_max": 322, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Te Kura o Te Paroa", "territorial_authority": "Whakatane District", "roll_year": 2025, "total_students": 308, "historical_max": 308, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Te Kura o Te Whānau-a-Apanui", "territorial_authority": "Ōpōtiki District", "roll_year": 2025, "total_students": 193, "historical_max": 193, "n_years_available": 10, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Te Manawa ō Pāpāmoa School", "territorial_authority": "Tauranga City", "roll_year": 2025, "total_students": 478, "historical_max": 478, "n_years_available": 4, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Te Puke High School", "territorial_authority": "Western Bay of Plenty District", "roll_year": 2025, "total_students": 1083, "historical_max": 1083, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Te Ranga School", "territorial_authority": "Western Bay of Plenty District", "roll_year": 2025, "total_students": 175, "historical_max": 175, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Te Wharekura o Mauao", "territorial_authority": "Tauranga City", "roll_year": 2025, "total_students": 294, "historical_max": 294, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Te Wharekura o Ruatoki", "territorial_authority": "Whakatane District", "roll_year": 2025, "total_students": 233, "historical_max": 233, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "TKKM o Hurungaterangi", "territorial_authority": "Rotorua District", "roll_year": 2025, "total_students": 93, "historical_max": 93, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "TKKM o Ruamata", "territorial_authority": "Rotorua District", "roll_year": 2025, "total_students": 288, "historical_max": 288, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "TKKM o Te Koutu", "territorial_authority": "Rotorua District", "roll_year": 2025, "total_students": 354, "historical_max": 354, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Waikite Valley School", "territorial_authority": "Rotorua District", "roll_year": 2025, "total_students": 95, "historical_max": 95, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Whakatane High School", "territorial_authority": "Whakatane District", "roll_year": 2025, "total_students": 1228, "historical_max": 1228, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Whakatane S D A School", "territorial_authority": "Whakatane District", "roll_year": 2025, "total_students": 47, "historical_max": 47, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Whakatane Teen Parent Unit", "territorial_authority": "Whakatane District", "roll_year": 2025, "total_students": 13, "historical_max": 13, "n_years_available": 9, "at_or_above_max": 1, "pct_of_historical_max": 100.0}, {"school_name": "Woodlands School (Opotiki)", "territorial_authority": "Ōpōtiki District", "roll_year": 2025, "total_students": 198, "historical_max": 198, "n_years_available": 16, "at_or_above_max": 1, "pct_of_historical_max": 100.0}], "pressure_trend": [{"year": 2010, "n_at_max": 24, "n_schools": 174}, {"year": 2011, "n_at_max": 8, "n_schools": 176}, {"year": 2012, "n_at_max": 8, "n_schools": 178}, {"year": 2013, "n_at_max": 6, "n_schools": 180}, {"year": 2014, "n_at_max": 1, "n_schools": 180}, {"year": 2015, "n_at_max": 7, "n_schools": 182}, {"year": 2016, "n_at_max": 12, "n_schools": 183}, {"year": 2017, "n_at_max": 13, "n_schools": 184}, {"year": 2018, "n_at_max": 8, "n_schools": 184}, {"year": 2019, "n_at_max": 13, "n_schools": 187}, {"year": 2020, "n_at_max": 14, "n_schools": 187}, {"year": 2021, "n_at_max": 20, "n_schools": 188}, {"year": 2022, "n_at_max": 6, "n_schools": 189}, {"year": 2023, "n_at_max": 8, "n_schools": 189}, {"year": 2024, "n_at_max": 21, "n_schools": 189}, {"year": 2025, "n_at_max": 35, "n_schools": 189}], "cohort_rows": [{"school_name": "Te Kura Mana Maori O Matahi", "territorial_authority": "Whakatane District", "year5_2020_count": 2, "year6_2021_count": 1, "change_abs": -1, "change_pct": -50.0}, {"school_name": "Rangitaiki School", "territorial_authority": "Taupo District", "year5_2020_count": 2, "year6_2021_count": 1, "change_abs": -1, "change_pct": -50.0}, {"school_name": "Te Mahoe School", "territorial_authority": "Whakatane District", "year5_2020_count": 6, "year6_2021_count": 3, "change_abs": -3, "change_pct": -50.0}, {"school_name": "Ashbrook School", "territorial_authority": "Ōpōtiki District", "year5_2020_count": 10, "year6_2021_count": 6, "change_abs": -4, "change_pct": -40.0}, {"school_name": "Mihi School", "territorial_authority": "Rotorua District", "year5_2020_count": 8, "year6_2021_count": 5, "change_abs": -3, "change_pct": -37.5}, {"school_name": "TKKM o Te Matai", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 11, "year6_2021_count": 7, "change_abs": -4, "change_pct": -36.4}, {"school_name": "TKKM o Hurungaterangi", "territorial_authority": "Rotorua District", "year5_2020_count": 9, "year6_2021_count": 6, "change_abs": -3, "change_pct": -33.3}, {"school_name": "Ōhope Beach School", "territorial_authority": "Whakatane District", "year5_2020_count": 50, "year6_2021_count": 35, "change_abs": -15, "change_pct": -30.0}, {"school_name": "St Thomas More Catholic School", "territorial_authority": "Tauranga City", "year5_2020_count": 27, "year6_2021_count": 19, "change_abs": -8, "change_pct": -29.6}, {"school_name": "Mamaku School", "territorial_authority": "Rotorua District", "year5_2020_count": 24, "year6_2021_count": 17, "change_abs": -7, "change_pct": -29.2}, {"school_name": "TKK Motuhake o Tawhiuau", "territorial_authority": "Whakatane District", "year5_2020_count": 7, "year6_2021_count": 5, "change_abs": -2, "change_pct": -28.6}, {"school_name": "Horohoro School", "territorial_authority": "Rotorua District", "year5_2020_count": 8, "year6_2021_count": 6, "change_abs": -2, "change_pct": -25.0}, {"school_name": "Whakamaru School", "territorial_authority": "Taupo District", "year5_2020_count": 20, "year6_2021_count": 15, "change_abs": -5, "change_pct": -25.0}, {"school_name": "Rotokawa School", "territorial_authority": "Rotorua District", "year5_2020_count": 41, "year6_2021_count": 31, "change_abs": -10, "change_pct": -24.4}, {"school_name": "Tāwera Bilingual School", "territorial_authority": "Whakatane District", "year5_2020_count": 9, "year6_2021_count": 7, "change_abs": -2, "change_pct": -22.2}, {"school_name": "Marotiri School", "territorial_authority": "Taupo District", "year5_2020_count": 32, "year6_2021_count": 25, "change_abs": -7, "change_pct": -21.9}, {"school_name": "Te Wharekura o Ruatoki", "territorial_authority": "Whakatane District", "year5_2020_count": 28, "year6_2021_count": 22, "change_abs": -6, "change_pct": -21.4}, {"school_name": "Te Wharekura o Ngāti Rongomai", "territorial_authority": "Rotorua District", "year5_2020_count": 5, "year6_2021_count": 4, "change_abs": -1, "change_pct": -20.0}, {"school_name": "Bellevue School (Tauranga)", "territorial_authority": "Tauranga City", "year5_2020_count": 60, "year6_2021_count": 48, "change_abs": -12, "change_pct": -20.0}, {"school_name": "TKKM o Huiarau", "territorial_authority": "Whakatane District", "year5_2020_count": 5, "year6_2021_count": 4, "change_abs": -1, "change_pct": -20.0}, {"school_name": "Kaimai School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 21, "year6_2021_count": 17, "change_abs": -4, "change_pct": -19.0}, {"school_name": "Galatea School", "territorial_authority": "Whakatane District", "year5_2020_count": 11, "year6_2021_count": 9, "change_abs": -2, "change_pct": -18.2}, {"school_name": "Lake Rerewhakaaitu School", "territorial_authority": "Rotorua District", "year5_2020_count": 11, "year6_2021_count": 9, "change_abs": -2, "change_pct": -18.2}, {"school_name": "TKKM o Te Koutu", "territorial_authority": "Rotorua District", "year5_2020_count": 24, "year6_2021_count": 20, "change_abs": -4, "change_pct": -16.7}, {"school_name": "Opotiki School", "territorial_authority": "Ōpōtiki District", "year5_2020_count": 39, "year6_2021_count": 33, "change_abs": -6, "change_pct": -15.4}, {"school_name": "St Michael's Catholic School (Rotorua)", "territorial_authority": "Rotorua District", "year5_2020_count": 26, "year6_2021_count": 22, "change_abs": -4, "change_pct": -15.4}, {"school_name": "Awakeri School", "territorial_authority": "Whakatane District", "year5_2020_count": 41, "year6_2021_count": 35, "change_abs": -6, "change_pct": -14.6}, {"school_name": "Te Kura o Matapihi", "territorial_authority": "Tauranga City", "year5_2020_count": 28, "year6_2021_count": 24, "change_abs": -4, "change_pct": -14.3}, {"school_name": "TKKM o Te Kura Kokiri", "territorial_authority": "Tauranga City", "year5_2020_count": 14, "year6_2021_count": 12, "change_abs": -2, "change_pct": -14.3}, {"school_name": "Murupara Area School", "territorial_authority": "Whakatane District", "year5_2020_count": 23, "year6_2021_count": 20, "change_abs": -3, "change_pct": -13.0}, {"school_name": "Tauranga Waldorf School", "territorial_authority": "Tauranga City", "year5_2020_count": 24, "year6_2021_count": 21, "change_abs": -3, "change_pct": -12.5}, {"school_name": "Broadlands School", "territorial_authority": "Rotorua District", "year5_2020_count": 25, "year6_2021_count": 22, "change_abs": -3, "change_pct": -12.0}, {"school_name": "Golden Sands School", "territorial_authority": "Tauranga City", "year5_2020_count": 142, "year6_2021_count": 127, "change_abs": -15, "change_pct": -10.6}, {"school_name": "Tauranga Adventist School", "territorial_authority": "Tauranga City", "year5_2020_count": 20, "year6_2021_count": 18, "change_abs": -2, "change_pct": -10.0}, {"school_name": "Kawerau South School", "territorial_authority": "Kawerau District", "year5_2020_count": 74, "year6_2021_count": 67, "change_abs": -7, "change_pct": -9.5}, {"school_name": "Otamarakau School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 11, "year6_2021_count": 10, "change_abs": -1, "change_pct": -9.1}, {"school_name": "Te Kura o Waitahanui", "territorial_authority": "Taupo District", "year5_2020_count": 11, "year6_2021_count": 10, "change_abs": -1, "change_pct": -9.1}, {"school_name": "Greerton Village School - Te Kura o Maarawaewae", "territorial_authority": "Tauranga City", "year5_2020_count": 78, "year6_2021_count": 71, "change_abs": -7, "change_pct": -9.0}, {"school_name": "Kawaha Point School", "territorial_authority": "Rotorua District", "year5_2020_count": 84, "year6_2021_count": 77, "change_abs": -7, "change_pct": -8.3}, {"school_name": "Te Kura o Te Paroa", "territorial_authority": "Whakatane District", "year5_2020_count": 37, "year6_2021_count": 34, "change_abs": -3, "change_pct": -8.1}, {"school_name": "Te Kura o Manunui", "territorial_authority": "Tauranga City", "year5_2020_count": 51, "year6_2021_count": 47, "change_abs": -4, "change_pct": -7.8}, {"school_name": "Kuratau School", "territorial_authority": "Taupo District", "year5_2020_count": 13, "year6_2021_count": 12, "change_abs": -1, "change_pct": -7.7}, {"school_name": "Te Puna School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 34, "year6_2021_count": 32, "change_abs": -2, "change_pct": -5.9}, {"school_name": "Fairhaven School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 74, "year6_2021_count": 70, "change_abs": -4, "change_pct": -5.4}, {"school_name": "James Street School", "territorial_authority": "Whakatane District", "year5_2020_count": 42, "year6_2021_count": 40, "change_abs": -2, "change_pct": -4.8}, {"school_name": "Pongakawa School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 45, "year6_2021_count": 43, "change_abs": -2, "change_pct": -4.4}, {"school_name": "Te Puke Primary School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 72, "year6_2021_count": 69, "change_abs": -3, "change_pct": -4.2}, {"school_name": "Thornton School", "territorial_authority": "Whakatane District", "year5_2020_count": 24, "year6_2021_count": 23, "change_abs": -1, "change_pct": -4.2}, {"school_name": "Kaharoa School", "territorial_authority": "Rotorua District", "year5_2020_count": 25, "year6_2021_count": 24, "change_abs": -1, "change_pct": -4.0}, {"school_name": "Glenholme School", "territorial_authority": "Rotorua District", "year5_2020_count": 64, "year6_2021_count": 62, "change_abs": -2, "change_pct": -3.1}, {"school_name": "Westbrook School", "territorial_authority": "Rotorua District", "year5_2020_count": 134, "year6_2021_count": 130, "change_abs": -4, "change_pct": -3.0}, {"school_name": "Kawerau Putauaki School", "territorial_authority": "Kawerau District", "year5_2020_count": 36, "year6_2021_count": 35, "change_abs": -1, "change_pct": -2.8}, {"school_name": "Te Akau ki Papamoa Primary School", "territorial_authority": "Tauranga City", "year5_2020_count": 108, "year6_2021_count": 105, "change_abs": -3, "change_pct": -2.8}, {"school_name": "Pyes Pa Road School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 37, "year6_2021_count": 36, "change_abs": -1, "change_pct": -2.7}, {"school_name": "Greenpark School (Tauranga)", "territorial_authority": "Tauranga City", "year5_2020_count": 167, "year6_2021_count": 163, "change_abs": -4, "change_pct": -2.4}, {"school_name": "Maungatapu School", "territorial_authority": "Tauranga City", "year5_2020_count": 93, "year6_2021_count": 91, "change_abs": -2, "change_pct": -2.2}, {"school_name": "Oropi School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 45, "year6_2021_count": 44, "change_abs": -1, "change_pct": -2.2}, {"school_name": "Owhata School", "territorial_authority": "Rotorua District", "year5_2020_count": 71, "year6_2021_count": 70, "change_abs": -1, "change_pct": -1.4}, {"school_name": "Mount Maunganui Primary School", "territorial_authority": "Tauranga City", "year5_2020_count": 85, "year6_2021_count": 84, "change_abs": -1, "change_pct": -1.2}, {"school_name": "Western Heights Primary School (Rotorua)", "territorial_authority": "Rotorua District", "year5_2020_count": 84, "year6_2021_count": 83, "change_abs": -1, "change_pct": -1.2}, {"school_name": "Omanu School", "territorial_authority": "Tauranga City", "year5_2020_count": 101, "year6_2021_count": 100, "change_abs": -1, "change_pct": -1.0}, {"school_name": "Taupo School", "territorial_authority": "Taupo District", "year5_2020_count": 99, "year6_2021_count": 98, "change_abs": -1, "change_pct": -1.0}, {"school_name": "Bethlehem College", "territorial_authority": "Tauranga City", "year5_2020_count": 107, "year6_2021_count": 106, "change_abs": -1, "change_pct": -0.9}, {"school_name": "Katikati Primary School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 130, "year6_2021_count": 129, "change_abs": -1, "change_pct": -0.8}, {"school_name": "Upper Atiamuri School", "territorial_authority": "Rotorua District", "year5_2020_count": 6, "year6_2021_count": 6, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Edgecumbe School", "territorial_authority": "Whakatane District", "year5_2020_count": 35, "year6_2021_count": 35, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Kaingaroa Forest School", "territorial_authority": "Rotorua District", "year5_2020_count": 9, "year6_2021_count": 9, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Paengaroa School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 30, "year6_2021_count": 30, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Te Kura o Ōmarumutu", "territorial_authority": "Ōpōtiki District", "year5_2020_count": 8, "year6_2021_count": 8, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Te Kura o Waioweka", "territorial_authority": "Ōpōtiki District", "year5_2020_count": 10, "year6_2021_count": 10, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Waiotahe Valley School", "territorial_authority": "Ōpōtiki District", "year5_2020_count": 23, "year6_2021_count": 23, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Whangamarino School", "territorial_authority": "Rotorua District", "year5_2020_count": 33, "year6_2021_count": 33, "change_abs": 0, "change_pct": 0.0}, {"school_name": "St Joseph's Catholic School (Opotiki)", "territorial_authority": "Ōpōtiki District", "year5_2020_count": 26, "year6_2021_count": 26, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Te Kura Mana Māori o Maraenui", "territorial_authority": "Ōpōtiki District", "year5_2020_count": 10, "year6_2021_count": 10, "change_abs": 0, "change_pct": 0.0}, {"school_name": "TKKM o Whakarewa I Te Reo Ki Tuwharetoa", "territorial_authority": "Taupo District", "year5_2020_count": 11, "year6_2021_count": 11, "change_abs": 0, "change_pct": 0.0}, {"school_name": "St Mary's Catholic School (Tauranga)", "territorial_authority": "Tauranga City", "year5_2020_count": 75, "year6_2021_count": 75, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Rangiuru School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 8, "year6_2021_count": 8, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Waimana School", "territorial_authority": "Whakatane District", "year5_2020_count": 3, "year6_2021_count": 3, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Omokoroa School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 55, "year6_2021_count": 55, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Whakamarama School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 9, "year6_2021_count": 9, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Nukuhou North School", "territorial_authority": "Whakatane District", "year5_2020_count": 16, "year6_2021_count": 16, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Whakatane S D A School", "territorial_authority": "Whakatane District", "year5_2020_count": 10, "year6_2021_count": 10, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Aorangi School (Rotorua)", "territorial_authority": "Rotorua District", "year5_2020_count": 9, "year6_2021_count": 9, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Waikite Valley School", "territorial_authority": "Rotorua District", "year5_2020_count": 15, "year6_2021_count": 15, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Wairakei School", "territorial_authority": "Taupo District", "year5_2020_count": 65, "year6_2021_count": 65, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Tauhara School", "territorial_authority": "Taupo District", "year5_2020_count": 39, "year6_2021_count": 39, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Welcome Bay School", "territorial_authority": "Tauranga City", "year5_2020_count": 63, "year6_2021_count": 63, "change_abs": 0, "change_pct": 0.0}, {"school_name": "Tahatai Coast School", "territorial_authority": "Tauranga City", "year5_2020_count": 162, "year6_2021_count": 163, "change_abs": 1, "change_pct": 0.6}, {"school_name": "Pillans Point School", "territorial_authority": "Tauranga City", "year5_2020_count": 101, "year6_2021_count": 102, "change_abs": 1, "change_pct": 1.0}, {"school_name": "Allandale School", "territorial_authority": "Whakatane District", "year5_2020_count": 97, "year6_2021_count": 98, "change_abs": 1, "change_pct": 1.0}, {"school_name": "Bethlehem School", "territorial_authority": "Tauranga City", "year5_2020_count": 97, "year6_2021_count": 98, "change_abs": 1, "change_pct": 1.0}, {"school_name": "Waipahihi School", "territorial_authority": "Taupo District", "year5_2020_count": 83, "year6_2021_count": 84, "change_abs": 1, "change_pct": 1.2}, {"school_name": "Tauranga Primary School", "territorial_authority": "Tauranga City", "year5_2020_count": 81, "year6_2021_count": 82, "change_abs": 1, "change_pct": 1.2}, {"school_name": "Ngongotahā School", "territorial_authority": "Rotorua District", "year5_2020_count": 67, "year6_2021_count": 68, "change_abs": 1, "change_pct": 1.5}, {"school_name": "Ōtūmoetai Primary School", "territorial_authority": "Tauranga City", "year5_2020_count": 124, "year6_2021_count": 126, "change_abs": 2, "change_pct": 1.6}, {"school_name": "Tauriko School", "territorial_authority": "Tauranga City", "year5_2020_count": 55, "year6_2021_count": 56, "change_abs": 1, "change_pct": 1.8}, {"school_name": "Tongariro School", "territorial_authority": "Taupo District", "year5_2020_count": 34, "year6_2021_count": 35, "change_abs": 1, "change_pct": 2.9}, {"school_name": "Malfroy School", "territorial_authority": "Rotorua District", "year5_2020_count": 57, "year6_2021_count": 59, "change_abs": 2, "change_pct": 3.5}, {"school_name": "Otonga Road School", "territorial_authority": "Rotorua District", "year5_2020_count": 97, "year6_2021_count": 101, "change_abs": 4, "change_pct": 4.1}, {"school_name": "Arataki School", "territorial_authority": "Tauranga City", "year5_2020_count": 71, "year6_2021_count": 74, "change_abs": 3, "change_pct": 4.2}, {"school_name": "Matua School", "territorial_authority": "Tauranga City", "year5_2020_count": 94, "year6_2021_count": 98, "change_abs": 4, "change_pct": 4.3}, {"school_name": "Sunset Primary School", "territorial_authority": "Rotorua District", "year5_2020_count": 23, "year6_2021_count": 24, "change_abs": 1, "change_pct": 4.3}, {"school_name": "St Mary's Catholic School (Rotorua)", "territorial_authority": "Rotorua District", "year5_2020_count": 65, "year6_2021_count": 68, "change_abs": 3, "change_pct": 4.6}, {"school_name": "Te Ranga School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 21, "year6_2021_count": 22, "change_abs": 1, "change_pct": 4.8}, {"school_name": "St Patrick's Catholic School (Taupo)", "territorial_authority": "Taupo District", "year5_2020_count": 40, "year6_2021_count": 42, "change_abs": 2, "change_pct": 5.0}, {"school_name": "Rotorua School", "territorial_authority": "Rotorua District", "year5_2020_count": 57, "year6_2021_count": 60, "change_abs": 3, "change_pct": 5.3}, {"school_name": "Pahoia School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 36, "year6_2021_count": 38, "change_abs": 2, "change_pct": 5.6}, {"school_name": "Pāpāmoa Primary School", "territorial_authority": "Tauranga City", "year5_2020_count": 148, "year6_2021_count": 157, "change_abs": 9, "change_pct": 6.1}, {"school_name": "Matata School", "territorial_authority": "Whakatane District", "year5_2020_count": 15, "year6_2021_count": 16, "change_abs": 1, "change_pct": 6.7}, {"school_name": "Te Kura o Hirangi", "territorial_authority": "Taupo District", "year5_2020_count": 15, "year6_2021_count": 16, "change_abs": 1, "change_pct": 6.7}, {"school_name": "St Joseph's Catholic School (Whakatane)", "territorial_authority": "Whakatane District", "year5_2020_count": 45, "year6_2021_count": 48, "change_abs": 3, "change_pct": 6.7}, {"school_name": "Apanui School", "territorial_authority": "Whakatane District", "year5_2020_count": 80, "year6_2021_count": 86, "change_abs": 6, "change_pct": 7.5}, {"school_name": "Selwyn Ridge School", "territorial_authority": "Tauranga City", "year5_2020_count": 104, "year6_2021_count": 112, "change_abs": 8, "change_pct": 7.7}, {"school_name": "Ōmokoroa Point School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 36, "year6_2021_count": 39, "change_abs": 3, "change_pct": 8.3}, {"school_name": "Te Kura O Te Teko", "territorial_authority": "Whakatane District", "year5_2020_count": 23, "year6_2021_count": 25, "change_abs": 2, "change_pct": 8.7}, {"school_name": "Selwyn School", "territorial_authority": "Rotorua District", "year5_2020_count": 70, "year6_2021_count": 77, "change_abs": 7, "change_pct": 10.0}, {"school_name": "Te Kura Mana Māori o Whangaparaoa", "territorial_authority": "Ōpōtiki District", "year5_2020_count": 9, "year6_2021_count": 10, "change_abs": 1, "change_pct": 11.1}, {"school_name": "Hilltop School", "territorial_authority": "Taupo District", "year5_2020_count": 79, "year6_2021_count": 88, "change_abs": 9, "change_pct": 11.4}, {"school_name": "Mountview School", "territorial_authority": "Taupo District", "year5_2020_count": 38, "year6_2021_count": 43, "change_abs": 5, "change_pct": 13.2}, {"school_name": "Lynmore Primary School", "territorial_authority": "Rotorua District", "year5_2020_count": 108, "year6_2021_count": 123, "change_abs": 15, "change_pct": 13.9}, {"school_name": "Te Kura Māori ā Rohe o Waiohau", "territorial_authority": "Whakatane District", "year5_2020_count": 7, "year6_2021_count": 8, "change_abs": 1, "change_pct": 14.3}, {"school_name": "Lake Taupo Christian School", "territorial_authority": "Taupo District", "year5_2020_count": 7, "year6_2021_count": 8, "change_abs": 1, "change_pct": 14.3}, {"school_name": "St Joseph's Catholic School (Matata)", "territorial_authority": "Whakatane District", "year5_2020_count": 7, "year6_2021_count": 8, "change_abs": 1, "change_pct": 14.3}, {"school_name": "Woodlands School (Opotiki)", "territorial_authority": "Ōpōtiki District", "year5_2020_count": 19, "year6_2021_count": 22, "change_abs": 3, "change_pct": 15.8}, {"school_name": "TKKM o Otepou", "territorial_authority": "Tauranga City", "year5_2020_count": 6, "year6_2021_count": 7, "change_abs": 1, "change_pct": 16.7}, {"school_name": "Otakiri School", "territorial_authority": "Whakatane District", "year5_2020_count": 32, "year6_2021_count": 38, "change_abs": 6, "change_pct": 18.8}, {"school_name": "Ngakuru School", "territorial_authority": "Rotorua District", "year5_2020_count": 5, "year6_2021_count": 6, "change_abs": 1, "change_pct": 20.0}, {"school_name": "Te Kura o Tōrere", "territorial_authority": "Ōpōtiki District", "year5_2020_count": 5, "year6_2021_count": 6, "change_abs": 1, "change_pct": 20.0}, {"school_name": "Te Rangihakahaka Centre for Science and Technology", "territorial_authority": "Rotorua District", "year5_2020_count": 5, "year6_2021_count": 6, "change_abs": 1, "change_pct": 20.0}, {"school_name": "TKKM o Rotoiti", "territorial_authority": "Rotorua District", "year5_2020_count": 10, "year6_2021_count": 12, "change_abs": 2, "change_pct": 20.0}, {"school_name": "Gate Pa School", "territorial_authority": "Tauranga City", "year5_2020_count": 54, "year6_2021_count": 66, "change_abs": 12, "change_pct": 22.2}, {"school_name": "TKKM o Ruamata", "territorial_authority": "Rotorua District", "year5_2020_count": 13, "year6_2021_count": 16, "change_abs": 3, "change_pct": 23.1}, {"school_name": "Taumata School", "territorial_authority": "Tauranga City", "year5_2020_count": 59, "year6_2021_count": 73, "change_abs": 14, "change_pct": 23.7}, {"school_name": "Tauranga Special School", "territorial_authority": "Tauranga City", "year5_2020_count": 4, "year6_2021_count": 5, "change_abs": 1, "change_pct": 25.0}, {"school_name": "Rotorua S D A School", "territorial_authority": "Rotorua District", "year5_2020_count": 8, "year6_2021_count": 10, "change_abs": 2, "change_pct": 25.0}, {"school_name": "Maketu School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 4, "year6_2021_count": 5, "change_abs": 1, "change_pct": 25.0}, {"school_name": "Tirohanga School", "territorial_authority": "Taupo District", "year5_2020_count": 4, "year6_2021_count": 5, "change_abs": 1, "change_pct": 25.0}, {"school_name": "Te Whata Tau o Putauaki", "territorial_authority": "Kawerau District", "year5_2020_count": 4, "year6_2021_count": 5, "change_abs": 1, "change_pct": 25.0}, {"school_name": "Whakarewarewa School", "territorial_authority": "Rotorua District", "year5_2020_count": 15, "year6_2021_count": 19, "change_abs": 4, "change_pct": 26.7}, {"school_name": "Taneatua School", "territorial_authority": "Whakatane District", "year5_2020_count": 17, "year6_2021_count": 22, "change_abs": 5, "change_pct": 29.4}, {"school_name": "Te Kura Toitu o Te Whaiti-nui-a-Toi", "territorial_authority": "Whakatane District", "year5_2020_count": 3, "year6_2021_count": 4, "change_abs": 1, "change_pct": 33.3}, {"school_name": "Te Kura o Te Moutere O Matakana", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 6, "year6_2021_count": 8, "change_abs": 2, "change_pct": 33.3}, {"school_name": "Merivale School", "territorial_authority": "Tauranga City", "year5_2020_count": 19, "year6_2021_count": 26, "change_abs": 7, "change_pct": 36.8}, {"school_name": "Rotorua Specialist School - Te Kura Pūkenga o Rotorua", "territorial_authority": "Rotorua District", "year5_2020_count": 5, "year6_2021_count": 7, "change_abs": 2, "change_pct": 40.0}, {"school_name": "Reporoa School", "territorial_authority": "Rotorua District", "year5_2020_count": 20, "year6_2021_count": 30, "change_abs": 10, "change_pct": 50.0}, {"school_name": "Lake Rotoma School", "territorial_authority": "Rotorua District", "year5_2020_count": 2, "year6_2021_count": 3, "change_abs": 1, "change_pct": 50.0}, {"school_name": "Te Kura o Te Whānau-a-Apanui", "territorial_authority": "Ōpōtiki District", "year5_2020_count": 5, "year6_2021_count": 8, "change_abs": 3, "change_pct": 60.0}, {"school_name": "Pukehina School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 1, "year6_2021_count": 2, "change_abs": 1, "change_pct": 100.0}, {"school_name": "Matahui School", "territorial_authority": "Western Bay of Plenty District", "year5_2020_count": 2, "year6_2021_count": 4, "change_abs": 2, "change_pct": 100.0}, {"school_name": "Te Kura Kaupapa Maori o Te Orini ki Ngati Awa", "territorial_authority": "Whakatane District", "year5_2020_count": 2, "year6_2021_count": 4, "change_abs": 2, "change_pct": 100.0}, {"school_name": "ACG Tauranga", "territorial_authority": "Tauranga City", "year5_2020_count": 15, "year6_2021_count": 31, "change_abs": 16, "change_pct": 106.7}], "cohort_avg_change_pct": 2.4, "cohort_n_negative": 64, "cohort_n_total": 151, "school_table": [{"school_name": "ACG Tauranga", "territorial_authority": "Tauranga City", "total_students": 413, "change_pct": 2.2, "moving_avg_3yr": 401.0, "historical_max": 413, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 11}, {"school_name": "Allandale School", "territorial_authority": "Whakatane District", "total_students": 346, "change_pct": 9.1, "moving_avg_3yr": 330.0, "historical_max": 429, "pct_of_historical_max": 80.7, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Aorangi School (Rotorua)", "territorial_authority": "Rotorua District", "total_students": 120, "change_pct": -2.4, "moving_avg_3yr": 127.0, "historical_max": 154, "pct_of_historical_max": 77.9, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Apanui School", "territorial_authority": "Whakatane District", "total_students": 418, "change_pct": -4.1, "moving_avg_3yr": 421.0, "historical_max": 436, "pct_of_historical_max": 95.9, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Aquinas College", "territorial_authority": "Tauranga City", "total_students": 827, "change_pct": 2.5, "moving_avg_3yr": 802.0, "historical_max": 827, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Arataki School", "territorial_authority": "Tauranga City", "total_students": 512, "change_pct": 3.0, "moving_avg_3yr": 499.0, "historical_max": 512, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Ashbrook School", "territorial_authority": "Ōpōtiki District", "total_students": 70, "change_pct": -7.9, "moving_avg_3yr": 75.0, "historical_max": 154, "pct_of_historical_max": 45.5, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Awakeri School", "territorial_authority": "Whakatane District", "total_students": 320, "change_pct": -2.7, "moving_avg_3yr": 319.0, "historical_max": 379, "pct_of_historical_max": 84.4, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Bellevue School (Tauranga)", "territorial_authority": "Tauranga City", "total_students": 307, "change_pct": -6.1, "moving_avg_3yr": 329.0, "historical_max": 442, "pct_of_historical_max": 69.5, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Bethlehem College", "territorial_authority": "Tauranga City", "total_students": 2031, "change_pct": 0.9, "moving_avg_3yr": 1996.0, "historical_max": 2031, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Bethlehem School", "territorial_authority": "Tauranga City", "total_students": 413, "change_pct": -5.7, "moving_avg_3yr": 431.0, "historical_max": 539, "pct_of_historical_max": 76.6, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Broadlands School", "territorial_authority": "Rotorua District", "total_students": 120, "change_pct": 17.6, "moving_avg_3yr": 107.0, "historical_max": 121, "pct_of_historical_max": 99.2, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Edgecumbe School", "territorial_authority": "Whakatane District", "total_students": 191, "change_pct": -3.0, "moving_avg_3yr": 201.0, "historical_max": 217, "pct_of_historical_max": 88.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Fairhaven School", "territorial_authority": "Western Bay of Plenty District", "total_students": 500, "change_pct": 1.2, "moving_avg_3yr": 478.0, "historical_max": 500, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Galatea School", "territorial_authority": "Whakatane District", "total_students": 127, "change_pct": 0.0, "moving_avg_3yr": 126.0, "historical_max": 127, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Gate Pa School", "territorial_authority": "Tauranga City", "total_students": 377, "change_pct": 8.3, "moving_avg_3yr": 357.0, "historical_max": 377, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Glenholme School", "territorial_authority": "Rotorua District", "total_students": 345, "change_pct": -9.4, "moving_avg_3yr": 360.0, "historical_max": 400, "pct_of_historical_max": 86.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Golden Sands School", "territorial_authority": "Tauranga City", "total_students": 523, "change_pct": 8.3, "moving_avg_3yr": 517.0, "historical_max": 672, "pct_of_historical_max": 77.8, "at_or_above_max": 0, "n_years_available": 15}, {"school_name": "Greenpark School (Tauranga)", "territorial_authority": "Tauranga City", "total_students": 664, "change_pct": -4.2, "moving_avg_3yr": 690.0, "historical_max": 885, "pct_of_historical_max": 75.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Greerton Village School - Te Kura o Maarawaewae", "territorial_authority": "Tauranga City", "total_students": 384, "change_pct": 4.6, "moving_avg_3yr": 374.0, "historical_max": 410, "pct_of_historical_max": 93.7, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Hilltop School", "territorial_authority": "Taupo District", "total_students": 574, "change_pct": -1.4, "moving_avg_3yr": 578.0, "historical_max": 602, "pct_of_historical_max": 95.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Horohoro School", "territorial_authority": "Rotorua District", "total_students": 42, "change_pct": 0.0, "moving_avg_3yr": 45.0, "historical_max": 66, "pct_of_historical_max": 63.6, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "James Street School", "territorial_authority": "Whakatane District", "total_students": 249, "change_pct": -8.1, "moving_avg_3yr": 260.0, "historical_max": 294, "pct_of_historical_max": 84.7, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "John Paul College", "territorial_authority": "Rotorua District", "total_students": 1117, "change_pct": -0.4, "moving_avg_3yr": 1114.0, "historical_max": 1207, "pct_of_historical_max": 92.5, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Kaharoa School", "territorial_authority": "Rotorua District", "total_students": 183, "change_pct": 2.2, "moving_avg_3yr": 176.0, "historical_max": 209, "pct_of_historical_max": 87.6, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Kaimai School", "territorial_authority": "Western Bay of Plenty District", "total_students": 64, "change_pct": -1.5, "moving_avg_3yr": 65.0, "historical_max": 116, "pct_of_historical_max": 55.2, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Kaingaroa Forest School", "territorial_authority": "Rotorua District", "total_students": 26, "change_pct": -21.2, "moving_avg_3yr": 31.0, "historical_max": 60, "pct_of_historical_max": 43.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Kaitao Intermediate", "territorial_authority": "Rotorua District", "total_students": 267, "change_pct": -9.5, "moving_avg_3yr": 284.0, "historical_max": 509, "pct_of_historical_max": 52.5, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Katikati College", "territorial_authority": "Western Bay of Plenty District", "total_students": 816, "change_pct": 3.7, "moving_avg_3yr": 802.0, "historical_max": 961, "pct_of_historical_max": 84.9, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Katikati Primary School", "territorial_authority": "Western Bay of Plenty District", "total_students": 482, "change_pct": -5.9, "moving_avg_3yr": 498.0, "historical_max": 589, "pct_of_historical_max": 81.8, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Kawaha Point School", "territorial_authority": "Rotorua District", "total_students": 222, "change_pct": -1.8, "moving_avg_3yr": 229.0, "historical_max": 358, "pct_of_historical_max": 62.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Kawerau Putauaki School", "territorial_authority": "Kawerau District", "total_students": 136, "change_pct": -4.9, "moving_avg_3yr": 156.0, "historical_max": 309, "pct_of_historical_max": 44.0, "at_or_above_max": 0, "n_years_available": 14}, {"school_name": "Kawerau South School", "territorial_authority": "Kawerau District", "total_students": 357, "change_pct": -6.3, "moving_avg_3yr": 357.0, "historical_max": 420, "pct_of_historical_max": 85.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Kuratau School", "territorial_authority": "Taupo District", "total_students": 91, "change_pct": 0.0, "moving_avg_3yr": 91.0, "historical_max": 107, "pct_of_historical_max": 85.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Kutarere School", "territorial_authority": "Ōpōtiki District", "total_students": 28, "change_pct": 16.7, "moving_avg_3yr": 24.0, "historical_max": 37, "pct_of_historical_max": 75.7, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Lake Rerewhakaaitu School", "territorial_authority": "Rotorua District", "total_students": 57, "change_pct": 3.6, "moving_avg_3yr": 55.0, "historical_max": 103, "pct_of_historical_max": 55.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Lake Rotoma School", "territorial_authority": "Rotorua District", "total_students": 24, "change_pct": -20.0, "moving_avg_3yr": 31.0, "historical_max": 61, "pct_of_historical_max": 39.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Lake Taupo Christian School", "territorial_authority": "Taupo District", "total_students": 129, "change_pct": 10.3, "moving_avg_3yr": 127.0, "historical_max": 136, "pct_of_historical_max": 94.9, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Lynmore Primary School", "territorial_authority": "Rotorua District", "total_students": 639, "change_pct": 3.6, "moving_avg_3yr": 624.0, "historical_max": 669, "pct_of_historical_max": 95.5, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Maketu School", "territorial_authority": "Western Bay of Plenty District", "total_students": 45, "change_pct": 2.3, "moving_avg_3yr": 41.0, "historical_max": 86, "pct_of_historical_max": 52.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Malfroy School", "territorial_authority": "Rotorua District", "total_students": 294, "change_pct": -4.2, "moving_avg_3yr": 299.0, "historical_max": 358, "pct_of_historical_max": 82.1, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Mamaku School", "territorial_authority": "Rotorua District", "total_students": 98, "change_pct": 0.0, "moving_avg_3yr": 103.0, "historical_max": 156, "pct_of_historical_max": 62.8, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Marotiri School", "territorial_authority": "Taupo District", "total_students": 157, "change_pct": 12.1, "moving_avg_3yr": 142.0, "historical_max": 162, "pct_of_historical_max": 96.9, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Matahui School", "territorial_authority": "Western Bay of Plenty District", "total_students": 44, "change_pct": -18.5, "moving_avg_3yr": 45.0, "historical_max": 87, "pct_of_historical_max": 50.6, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Matata School", "territorial_authority": "Whakatane District", "total_students": 96, "change_pct": -1.0, "moving_avg_3yr": 94.0, "historical_max": 97, "pct_of_historical_max": 99.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Matua School", "territorial_authority": "Tauranga City", "total_students": 514, "change_pct": 1.4, "moving_avg_3yr": 522.0, "historical_max": 545, "pct_of_historical_max": 94.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Maungatapu School", "territorial_authority": "Tauranga City", "total_students": 599, "change_pct": -1.5, "moving_avg_3yr": 591.0, "historical_max": 608, "pct_of_historical_max": 98.5, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Merivale School", "territorial_authority": "Tauranga City", "total_students": 172, "change_pct": -4.4, "moving_avg_3yr": 179.0, "historical_max": 189, "pct_of_historical_max": 91.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Mihi School", "territorial_authority": "Rotorua District", "total_students": 15, "change_pct": -11.8, "moving_avg_3yr": 17.0, "historical_max": 58, "pct_of_historical_max": 25.9, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Mokoia Intermediate", "territorial_authority": "Rotorua District", "total_students": 318, "change_pct": -9.1, "moving_avg_3yr": 348.0, "historical_max": 378, "pct_of_historical_max": 84.1, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Mount Maunganui College", "territorial_authority": "Tauranga City", "total_students": 1711, "change_pct": -2.7, "moving_avg_3yr": 1736.0, "historical_max": 1758, "pct_of_historical_max": 97.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Mount Maunganui Intermediate School", "territorial_authority": "Tauranga City", "total_students": 708, "change_pct": -3.0, "moving_avg_3yr": 703.0, "historical_max": 756, "pct_of_historical_max": 93.7, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Mount Maunganui Primary School", "territorial_authority": "Tauranga City", "total_students": 431, "change_pct": -2.7, "moving_avg_3yr": 435.0, "historical_max": 466, "pct_of_historical_max": 92.5, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Mountview School", "territorial_authority": "Taupo District", "total_students": 362, "change_pct": 2.0, "moving_avg_3yr": 353.0, "historical_max": 402, "pct_of_historical_max": 90.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Murupara Area School", "territorial_authority": "Whakatane District", "total_students": 190, "change_pct": -1.0, "moving_avg_3yr": 185.0, "historical_max": 349, "pct_of_historical_max": 54.4, "at_or_above_max": 0, "n_years_available": 13}, {"school_name": "Ngakuru School", "territorial_authority": "Rotorua District", "total_students": 67, "change_pct": 13.6, "moving_avg_3yr": 63.0, "historical_max": 67, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Ngongotahā School", "territorial_authority": "Rotorua District", "total_students": 380, "change_pct": -5.7, "moving_avg_3yr": 396.0, "historical_max": 405, "pct_of_historical_max": 93.8, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Nukuhou North School", "territorial_authority": "Whakatane District", "total_students": 64, "change_pct": 10.3, "moving_avg_3yr": 66.0, "historical_max": 90, "pct_of_historical_max": 71.1, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Omanu School", "territorial_authority": "Tauranga City", "total_students": 524, "change_pct": 1.7, "moving_avg_3yr": 521.0, "historical_max": 590, "pct_of_historical_max": 88.8, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Omokoroa School", "territorial_authority": "Western Bay of Plenty District", "total_students": 339, "change_pct": -1.2, "moving_avg_3yr": 337.0, "historical_max": 343, "pct_of_historical_max": 98.8, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Opotiki College", "territorial_authority": "Ōpōtiki District", "total_students": 303, "change_pct": -1.9, "moving_avg_3yr": 310.0, "historical_max": 523, "pct_of_historical_max": 57.9, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Opotiki School", "territorial_authority": "Ōpōtiki District", "total_students": 280, "change_pct": 3.3, "moving_avg_3yr": 282.0, "historical_max": 299, "pct_of_historical_max": 93.6, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Oropi School", "territorial_authority": "Western Bay of Plenty District", "total_students": 316, "change_pct": -1.6, "moving_avg_3yr": 328.0, "historical_max": 355, "pct_of_historical_max": 89.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Otakiri School", "territorial_authority": "Whakatane District", "total_students": 184, "change_pct": 4.5, "moving_avg_3yr": 180.0, "historical_max": 199, "pct_of_historical_max": 92.5, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Otamarakau School", "territorial_authority": "Western Bay of Plenty District", "total_students": 83, "change_pct": -9.8, "moving_avg_3yr": 86.0, "historical_max": 93, "pct_of_historical_max": 89.2, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Otonga Road School", "territorial_authority": "Rotorua District", "total_students": 509, "change_pct": -1.2, "moving_avg_3yr": 508.0, "historical_max": 600, "pct_of_historical_max": 84.8, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Owhata School", "territorial_authority": "Rotorua District", "total_students": 250, "change_pct": 7.3, "moving_avg_3yr": 251.0, "historical_max": 273, "pct_of_historical_max": 91.6, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Paengaroa School", "territorial_authority": "Western Bay of Plenty District", "total_students": 211, "change_pct": 3.9, "moving_avg_3yr": 200.0, "historical_max": 229, "pct_of_historical_max": 92.1, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Pahoia School", "territorial_authority": "Western Bay of Plenty District", "total_students": 170, "change_pct": -10.1, "moving_avg_3yr": 182.0, "historical_max": 218, "pct_of_historical_max": 78.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Papamoa College", "territorial_authority": "Tauranga City", "total_students": 1790, "change_pct": 1.4, "moving_avg_3yr": 1754.0, "historical_max": 1790, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 15}, {"school_name": "Pillans Point School", "territorial_authority": "Tauranga City", "total_students": 508, "change_pct": 0.6, "moving_avg_3yr": 513.0, "historical_max": 556, "pct_of_historical_max": 91.4, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Pongakawa School", "territorial_authority": "Western Bay of Plenty District", "total_students": 308, "change_pct": 5.1, "moving_avg_3yr": 291.0, "historical_max": 330, "pct_of_historical_max": 93.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Pukehina School", "territorial_authority": "Western Bay of Plenty District", "total_students": 26, "change_pct": 0.0, "moving_avg_3yr": 22.0, "historical_max": 29, "pct_of_historical_max": 89.7, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Pyes Pa Road School", "territorial_authority": "Western Bay of Plenty District", "total_students": 241, "change_pct": -1.2, "moving_avg_3yr": 236.0, "historical_max": 244, "pct_of_historical_max": 98.8, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Pāpāmoa Primary School", "territorial_authority": "Tauranga City", "total_students": 579, "change_pct": -4.3, "moving_avg_3yr": 593.0, "historical_max": 732, "pct_of_historical_max": 79.1, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Rangitaiki College – Te Kura Tuarua o Rangitaiki", "territorial_authority": "Whakatane District", "total_students": 153, "change_pct": -5.0, "moving_avg_3yr": 157.0, "historical_max": 314, "pct_of_historical_max": 48.7, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Rangitaiki School", "territorial_authority": "Taupo District", "total_students": 15, "change_pct": 50.0, "moving_avg_3yr": 11.0, "historical_max": 23, "pct_of_historical_max": 65.2, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Rangiuru School", "territorial_authority": "Western Bay of Plenty District", "total_students": 83, "change_pct": 12.2, "moving_avg_3yr": 74.0, "historical_max": 88, "pct_of_historical_max": 94.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Reporoa College", "territorial_authority": "Rotorua District", "total_students": 195, "change_pct": -3.5, "moving_avg_3yr": 197.0, "historical_max": 429, "pct_of_historical_max": 45.5, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Reporoa School", "territorial_authority": "Rotorua District", "total_students": 80, "change_pct": -28.6, "moving_avg_3yr": 99.0, "historical_max": 129, "pct_of_historical_max": 62.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Rotokawa School", "territorial_authority": "Rotorua District", "total_students": 157, "change_pct": -6.0, "moving_avg_3yr": 157.0, "historical_max": 221, "pct_of_historical_max": 71.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Rotorua Boys' High School", "territorial_authority": "Rotorua District", "total_students": 1154, "change_pct": -5.9, "moving_avg_3yr": 1177.0, "historical_max": 1226, "pct_of_historical_max": 94.1, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Rotorua Girls' High School", "territorial_authority": "Rotorua District", "total_students": 658, "change_pct": -4.5, "moving_avg_3yr": 658.0, "historical_max": 886, "pct_of_historical_max": 74.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Rotorua Intermediate", "territorial_authority": "Rotorua District", "total_students": 645, "change_pct": -0.6, "moving_avg_3yr": 656.0, "historical_max": 723, "pct_of_historical_max": 89.2, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Rotorua Lakes High School", "territorial_authority": "Rotorua District", "total_students": 701, "change_pct": -5.9, "moving_avg_3yr": 718.0, "historical_max": 745, "pct_of_historical_max": 94.1, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Rotorua S D A School", "territorial_authority": "Rotorua District", "total_students": 41, "change_pct": -4.7, "moving_avg_3yr": 40.0, "historical_max": 48, "pct_of_historical_max": 85.4, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Rotorua School", "territorial_authority": "Rotorua District", "total_students": 410, "change_pct": 9.3, "moving_avg_3yr": 389.0, "historical_max": 410, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Rotorua Specialist School - Te Kura Pūkenga o Rotorua", "territorial_authority": "Rotorua District", "total_students": 102, "change_pct": 12.1, "moving_avg_3yr": 95.0, "historical_max": 102, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Selwyn Ridge School", "territorial_authority": "Tauranga City", "total_students": 473, "change_pct": 4.6, "moving_avg_3yr": 463.0, "historical_max": 518, "pct_of_historical_max": 91.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Selwyn School", "territorial_authority": "Rotorua District", "total_students": 343, "change_pct": 10.6, "moving_avg_3yr": 314.0, "historical_max": 497, "pct_of_historical_max": 69.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "St Joseph's Catholic School (Matata)", "territorial_authority": "Whakatane District", "total_students": 41, "change_pct": 13.9, "moving_avg_3yr": 38.0, "historical_max": 45, "pct_of_historical_max": 91.1, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "St Joseph's Catholic School (Opotiki)", "territorial_authority": "Ōpōtiki District", "total_students": 155, "change_pct": -8.8, "moving_avg_3yr": 163.0, "historical_max": 230, "pct_of_historical_max": 67.4, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "St Joseph's Catholic School (Whakatane)", "territorial_authority": "Whakatane District", "total_students": 262, "change_pct": 3.1, "moving_avg_3yr": 257.0, "historical_max": 267, "pct_of_historical_max": 98.1, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "St Mary's Catholic School (Rotorua)", "territorial_authority": "Rotorua District", "total_students": 451, "change_pct": 0.2, "moving_avg_3yr": 442.0, "historical_max": 455, "pct_of_historical_max": 99.1, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "St Mary's Catholic School (Tauranga)", "territorial_authority": "Tauranga City", "total_students": 458, "change_pct": 5.3, "moving_avg_3yr": 441.0, "historical_max": 458, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "St Michael's Catholic School (Rotorua)", "territorial_authority": "Rotorua District", "total_students": 102, "change_pct": 3.0, "moving_avg_3yr": 100.0, "historical_max": 180, "pct_of_historical_max": 56.7, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "St Patrick's Catholic School (Taupo)", "territorial_authority": "Taupo District", "total_students": 246, "change_pct": -5.7, "moving_avg_3yr": 257.0, "historical_max": 292, "pct_of_historical_max": 84.2, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "St Thomas More Catholic School", "territorial_authority": "Tauranga City", "total_students": 100, "change_pct": 2.0, "moving_avg_3yr": 103.0, "historical_max": 223, "pct_of_historical_max": 44.8, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Sunset Primary School", "territorial_authority": "Rotorua District", "total_students": 143, "change_pct": -4.0, "moving_avg_3yr": 143.0, "historical_max": 154, "pct_of_historical_max": 92.9, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Suzanne Aubert Catholic School", "territorial_authority": "Tauranga City", "total_students": 200, "change_pct": 7.0, "moving_avg_3yr": 187.0, "historical_max": 200, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 5}, {"school_name": "TKK Motuhake o Tawhiuau", "territorial_authority": "Whakatane District", "total_students": 89, "change_pct": 21.9, "moving_avg_3yr": 79.0, "historical_max": 138, "pct_of_historical_max": 64.5, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "TKKM o Huiarau", "territorial_authority": "Whakatane District", "total_students": 71, "change_pct": -13.4, "moving_avg_3yr": 76.0, "historical_max": 92, "pct_of_historical_max": 77.2, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "TKKM o Hurungaterangi", "territorial_authority": "Rotorua District", "total_students": 93, "change_pct": 5.7, "moving_avg_3yr": 88.0, "historical_max": 93, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "TKKM o Otepou", "territorial_authority": "Tauranga City", "total_students": 67, "change_pct": -21.2, "moving_avg_3yr": 75.0, "historical_max": 85, "pct_of_historical_max": 78.8, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "TKKM o Rotoiti", "territorial_authority": "Rotorua District", "total_students": 41, "change_pct": -12.8, "moving_avg_3yr": 44.0, "historical_max": 89, "pct_of_historical_max": 46.1, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "TKKM o Ruamata", "territorial_authority": "Rotorua District", "total_students": 288, "change_pct": 5.1, "moving_avg_3yr": 273.0, "historical_max": 288, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "TKKM o Te Koutu", "territorial_authority": "Rotorua District", "total_students": 354, "change_pct": 9.6, "moving_avg_3yr": 331.0, "historical_max": 354, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "TKKM o Te Kura Kokiri", "territorial_authority": "Tauranga City", "total_students": 266, "change_pct": 5.1, "moving_avg_3yr": 278.0, "historical_max": 315, "pct_of_historical_max": 84.4, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "TKKM o Te Matai", "territorial_authority": "Western Bay of Plenty District", "total_students": 47, "change_pct": 9.3, "moving_avg_3yr": 43.0, "historical_max": 61, "pct_of_historical_max": 77.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "TKKM o Whakarewa I Te Reo Ki Tuwharetoa", "territorial_authority": "Taupo District", "total_students": 160, "change_pct": -1.8, "moving_avg_3yr": 168.0, "historical_max": 209, "pct_of_historical_max": 76.6, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Tahatai Coast School", "territorial_authority": "Tauranga City", "total_students": 797, "change_pct": -0.9, "moving_avg_3yr": 796.0, "historical_max": 804, "pct_of_historical_max": 99.1, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Taneatua School", "territorial_authority": "Whakatane District", "total_students": 128, "change_pct": -9.9, "moving_avg_3yr": 132.0, "historical_max": 239, "pct_of_historical_max": 53.6, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Tarawera High School", "territorial_authority": "Kawerau District", "total_students": 452, "change_pct": 4.4, "moving_avg_3yr": 432.0, "historical_max": 472, "pct_of_historical_max": 95.8, "at_or_above_max": 0, "n_years_available": 13}, {"school_name": "Tauhara College", "territorial_authority": "Taupo District", "total_students": 680, "change_pct": -0.9, "moving_avg_3yr": 662.0, "historical_max": 692, "pct_of_historical_max": 98.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Tauhara School", "territorial_authority": "Taupo District", "total_students": 239, "change_pct": -14.0, "moving_avg_3yr": 257.0, "historical_max": 278, "pct_of_historical_max": 86.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Taumata School", "territorial_authority": "Tauranga City", "total_students": 674, "change_pct": -1.7, "moving_avg_3yr": 673.0, "historical_max": 686, "pct_of_historical_max": 98.3, "at_or_above_max": 0, "n_years_available": 7}, {"school_name": "Taupo Intermediate", "territorial_authority": "Taupo District", "total_students": 526, "change_pct": 0.8, "moving_avg_3yr": 525.0, "historical_max": 638, "pct_of_historical_max": 82.4, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Taupo School", "territorial_authority": "Taupo District", "total_students": 476, "change_pct": 0.4, "moving_avg_3yr": 467.0, "historical_max": 493, "pct_of_historical_max": 96.6, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Taupo-nui-a-Tia College", "territorial_authority": "Taupo District", "total_students": 1235, "change_pct": 8.6, "moving_avg_3yr": 1160.0, "historical_max": 1235, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Tauranga Adventist School", "territorial_authority": "Tauranga City", "total_students": 108, "change_pct": -2.7, "moving_avg_3yr": 111.0, "historical_max": 117, "pct_of_historical_max": 92.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Tauranga Boys' College", "territorial_authority": "Tauranga City", "total_students": 2212, "change_pct": 1.3, "moving_avg_3yr": 2180.0, "historical_max": 2212, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Tauranga Girls' College", "territorial_authority": "Tauranga City", "total_students": 1430, "change_pct": -1.9, "moving_avg_3yr": 1434.0, "historical_max": 1561, "pct_of_historical_max": 91.6, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Tauranga Intermediate", "territorial_authority": "Tauranga City", "total_students": 1259, "change_pct": -0.2, "moving_avg_3yr": 1257.0, "historical_max": 1361, "pct_of_historical_max": 92.5, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Tauranga Primary School", "territorial_authority": "Tauranga City", "total_students": 443, "change_pct": -0.9, "moving_avg_3yr": 442.0, "historical_max": 467, "pct_of_historical_max": 94.9, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Tauranga Special School", "territorial_authority": "Tauranga City", "total_students": 122, "change_pct": 8.0, "moving_avg_3yr": 113.0, "historical_max": 122, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Tauranga Waldorf School", "territorial_authority": "Tauranga City", "total_students": 204, "change_pct": -2.4, "moving_avg_3yr": 205.0, "historical_max": 209, "pct_of_historical_max": 97.6, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Tauriko School", "territorial_authority": "Tauranga City", "total_students": 250, "change_pct": -2.3, "moving_avg_3yr": 256.0, "historical_max": 340, "pct_of_historical_max": 73.5, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Akau ki Papamoa Primary School", "territorial_authority": "Tauranga City", "total_students": 522, "change_pct": -1.1, "moving_avg_3yr": 529.0, "historical_max": 671, "pct_of_historical_max": 77.8, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Kura Kaupapa Maori o Te Orini ki Ngati Awa", "territorial_authority": "Whakatane District", "total_students": 92, "change_pct": 2.2, "moving_avg_3yr": 82.0, "historical_max": 92, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 11}, {"school_name": "Te Kura Mana Maori O Matahi", "territorial_authority": "Whakatane District", "total_students": 12, "change_pct": -20.0, "moving_avg_3yr": 13.0, "historical_max": 35, "pct_of_historical_max": 34.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Kura Mana Māori o Maraenui", "territorial_authority": "Ōpōtiki District", "total_students": 32, "change_pct": -46.7, "moving_avg_3yr": 46.0, "historical_max": 63, "pct_of_historical_max": 50.8, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Kura Mana Māori o Whangaparaoa", "territorial_authority": "Ōpōtiki District", "total_students": 86, "change_pct": -12.2, "moving_avg_3yr": 98.0, "historical_max": 116, "pct_of_historical_max": 74.1, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Kura Māori ā Rohe o Waiohau", "territorial_authority": "Whakatane District", "total_students": 84, "change_pct": -2.3, "moving_avg_3yr": 82.0, "historical_max": 88, "pct_of_historical_max": 95.5, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Kura O Te Teko", "territorial_authority": "Whakatane District", "total_students": 152, "change_pct": 5.6, "moving_avg_3yr": 147.0, "historical_max": 197, "pct_of_historical_max": 77.2, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Kura Toitu o Te Whaiti-nui-a-Toi", "territorial_authority": "Whakatane District", "total_students": 12, "change_pct": -7.7, "moving_avg_3yr": 15.0, "historical_max": 37, "pct_of_historical_max": 32.4, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Kura o Hirangi", "territorial_authority": "Taupo District", "total_students": 271, "change_pct": 0.7, "moving_avg_3yr": 270.0, "historical_max": 271, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Te Kura o Manunui", "territorial_authority": "Tauranga City", "total_students": 322, "change_pct": 3.2, "moving_avg_3yr": 308.0, "historical_max": 322, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Te Kura o Matapihi", "territorial_authority": "Tauranga City", "total_students": 184, "change_pct": 0.5, "moving_avg_3yr": 191.0, "historical_max": 207, "pct_of_historical_max": 88.9, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Kura o Te Moutere O Matakana", "territorial_authority": "Western Bay of Plenty District", "total_students": 23, "change_pct": -17.9, "moving_avg_3yr": 25.0, "historical_max": 39, "pct_of_historical_max": 59.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Kura o Te Paroa", "territorial_authority": "Whakatane District", "total_students": 308, "change_pct": 3.7, "moving_avg_3yr": 302.0, "historical_max": 308, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Te Kura o Te Whānau-a-Apanui", "territorial_authority": "Ōpōtiki District", "total_students": 193, "change_pct": 16.3, "moving_avg_3yr": 171.0, "historical_max": 193, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 10}, {"school_name": "Te Kura o Tōrere", "territorial_authority": "Ōpōtiki District", "total_students": 31, "change_pct": 34.8, "moving_avg_3yr": 22.0, "historical_max": 43, "pct_of_historical_max": 72.1, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Kura o Waioweka", "territorial_authority": "Ōpōtiki District", "total_students": 54, "change_pct": -1.8, "moving_avg_3yr": 55.0, "historical_max": 90, "pct_of_historical_max": 60.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Kura o Waitahanui", "territorial_authority": "Taupo District", "total_students": 75, "change_pct": 17.2, "moving_avg_3yr": 66.0, "historical_max": 78, "pct_of_historical_max": 96.2, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Kura o Ōmarumutu", "territorial_authority": "Ōpōtiki District", "total_students": 76, "change_pct": -12.6, "moving_avg_3yr": 84.0, "historical_max": 94, "pct_of_historical_max": 80.9, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Mahoe School", "territorial_authority": "Whakatane District", "total_students": 32, "change_pct": -37.3, "moving_avg_3yr": 38.0, "historical_max": 53, "pct_of_historical_max": 60.4, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Manawa ō Pāpāmoa School", "territorial_authority": "Tauranga City", "total_students": 478, "change_pct": 11.4, "moving_avg_3yr": 416.0, "historical_max": 478, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 4}, {"school_name": "Te Puke High School", "territorial_authority": "Western Bay of Plenty District", "total_students": 1083, "change_pct": 8.2, "moving_avg_3yr": 1009.0, "historical_max": 1083, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Te Puke Intermediate", "territorial_authority": "Western Bay of Plenty District", "total_students": 512, "change_pct": -3.0, "moving_avg_3yr": 492.0, "historical_max": 528, "pct_of_historical_max": 97.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Puke Primary School", "territorial_authority": "Western Bay of Plenty District", "total_students": 294, "change_pct": -8.1, "moving_avg_3yr": 313.0, "historical_max": 369, "pct_of_historical_max": 79.7, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Puna School", "territorial_authority": "Western Bay of Plenty District", "total_students": 229, "change_pct": -0.9, "moving_avg_3yr": 234.0, "historical_max": 289, "pct_of_historical_max": 79.2, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Ranga School", "territorial_authority": "Western Bay of Plenty District", "total_students": 175, "change_pct": 5.4, "moving_avg_3yr": 164.0, "historical_max": 175, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Te Rangihakahaka Centre for Science and Technology", "territorial_authority": "Rotorua District", "total_students": 95, "change_pct": -16.7, "moving_avg_3yr": 107.0, "historical_max": 114, "pct_of_historical_max": 83.3, "at_or_above_max": 0, "n_years_available": 7}, {"school_name": "Te Tari Ako Matua Taiohi Education Centre", "territorial_authority": "Kawerau District", "total_students": 12, "change_pct": -7.7, "moving_avg_3yr": 10.0, "historical_max": 20, "pct_of_historical_max": 60.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Whakatipuranga (Otumoetai TPU)", "territorial_authority": "Tauranga City", "total_students": 20, "change_pct": 25.0, "moving_avg_3yr": 19.0, "historical_max": 32, "pct_of_historical_max": 62.5, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Te Wharekura o Mauao", "territorial_authority": "Tauranga City", "total_students": 294, "change_pct": 6.5, "moving_avg_3yr": 278.0, "historical_max": 294, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Te Wharekura o Ngāti Rongomai", "territorial_authority": "Rotorua District", "total_students": 113, "change_pct": -5.8, "moving_avg_3yr": 115.0, "historical_max": 120, "pct_of_historical_max": 94.2, "at_or_above_max": 0, "n_years_available": 7}, {"school_name": "Te Wharekura o Ruatoki", "territorial_authority": "Whakatane District", "total_students": 233, "change_pct": 3.1, "moving_avg_3yr": 226.0, "historical_max": 233, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Te Whata Tau o Putauaki", "territorial_authority": "Kawerau District", "total_students": 75, "change_pct": 29.3, "moving_avg_3yr": 64.0, "historical_max": 110, "pct_of_historical_max": 68.2, "at_or_above_max": 0, "n_years_available": 14}, {"school_name": "Te Āhuru Mōwai", "territorial_authority": "Rotorua District", "total_students": 11, "change_pct": -15.4, "moving_avg_3yr": 11.0, "historical_max": 35, "pct_of_historical_max": 31.4, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Thornton School", "territorial_authority": "Whakatane District", "total_students": 124, "change_pct": 10.7, "moving_avg_3yr": 116.0, "historical_max": 133, "pct_of_historical_max": 93.2, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Tirohanga School", "territorial_authority": "Taupo District", "total_students": 25, "change_pct": -16.7, "moving_avg_3yr": 26.0, "historical_max": 33, "pct_of_historical_max": 75.8, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Tongariro School", "territorial_authority": "Taupo District", "total_students": 344, "change_pct": 0.3, "moving_avg_3yr": 347.0, "historical_max": 520, "pct_of_historical_max": 66.2, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Trident High School", "territorial_authority": "Whakatane District", "total_students": 854, "change_pct": -0.9, "moving_avg_3yr": 869.0, "historical_max": 1198, "pct_of_historical_max": 71.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Tāwera Bilingual School", "territorial_authority": "Whakatane District", "total_students": 31, "change_pct": -13.9, "moving_avg_3yr": 37.0, "historical_max": 88, "pct_of_historical_max": 35.2, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Upper Atiamuri School", "territorial_authority": "Rotorua District", "total_students": 54, "change_pct": -1.8, "moving_avg_3yr": 55.0, "historical_max": 60, "pct_of_historical_max": 90.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Waikite Valley School", "territorial_authority": "Rotorua District", "total_students": 95, "change_pct": 5.6, "moving_avg_3yr": 90.0, "historical_max": 95, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Waimana School", "territorial_authority": "Whakatane District", "total_students": 21, "change_pct": 10.5, "moving_avg_3yr": 21.0, "historical_max": 91, "pct_of_historical_max": 23.1, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Waiotahe Valley School", "territorial_authority": "Ōpōtiki District", "total_students": 115, "change_pct": 4.5, "moving_avg_3yr": 111.0, "historical_max": 116, "pct_of_historical_max": 99.1, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Waipahihi School", "territorial_authority": "Taupo District", "total_students": 389, "change_pct": 6.3, "moving_avg_3yr": 377.0, "historical_max": 501, "pct_of_historical_max": 77.6, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Wairakei School", "territorial_authority": "Taupo District", "total_students": 335, "change_pct": -7.5, "moving_avg_3yr": 349.0, "historical_max": 370, "pct_of_historical_max": 90.5, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Welcome Bay School", "territorial_authority": "Tauranga City", "total_students": 284, "change_pct": -1.7, "moving_avg_3yr": 292.0, "historical_max": 343, "pct_of_historical_max": 82.8, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Westbrook School", "territorial_authority": "Rotorua District", "total_students": 493, "change_pct": 0.6, "moving_avg_3yr": 490.0, "historical_max": 577, "pct_of_historical_max": 85.4, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Western Heights High School", "territorial_authority": "Rotorua District", "total_students": 1176, "change_pct": -0.3, "moving_avg_3yr": 1170.0, "historical_max": 1560, "pct_of_historical_max": 75.4, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Western Heights Primary School (Rotorua)", "territorial_authority": "Rotorua District", "total_students": 409, "change_pct": -4.2, "moving_avg_3yr": 420.0, "historical_max": 450, "pct_of_historical_max": 90.9, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Whakamarama School", "territorial_authority": "Western Bay of Plenty District", "total_students": 95, "change_pct": -3.1, "moving_avg_3yr": 94.0, "historical_max": 98, "pct_of_historical_max": 96.9, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Whakamaru School", "territorial_authority": "Taupo District", "total_students": 91, "change_pct": -9.0, "moving_avg_3yr": 95.0, "historical_max": 100, "pct_of_historical_max": 91.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Whakarewarewa School", "territorial_authority": "Rotorua District", "total_students": 111, "change_pct": -2.6, "moving_avg_3yr": 114.0, "historical_max": 146, "pct_of_historical_max": 76.0, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Whakatane High School", "territorial_authority": "Whakatane District", "total_students": 1228, "change_pct": 0.4, "moving_avg_3yr": 1198.0, "historical_max": 1228, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Whakatane Intermediate", "territorial_authority": "Whakatane District", "total_students": 597, "change_pct": 1.4, "moving_avg_3yr": 592.0, "historical_max": 601, "pct_of_historical_max": 99.3, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Whakatane S D A School", "territorial_authority": "Whakatane District", "total_students": 47, "change_pct": 0.0, "moving_avg_3yr": 46.0, "historical_max": 47, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Whakatane Teen Parent Unit", "territorial_authority": "Whakatane District", "total_students": 13, "change_pct": 8.3, "moving_avg_3yr": 11.0, "historical_max": 13, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 9}, {"school_name": "Whangamarino School", "territorial_authority": "Rotorua District", "total_students": 140, "change_pct": 0.7, "moving_avg_3yr": 143.0, "historical_max": 179, "pct_of_historical_max": 78.2, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Woodlands School (Opotiki)", "territorial_authority": "Ōpōtiki District", "total_students": 198, "change_pct": 4.8, "moving_avg_3yr": 186.0, "historical_max": 198, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Ōhope Beach School", "territorial_authority": "Whakatane District", "total_students": 228, "change_pct": -5.0, "moving_avg_3yr": 235.0, "historical_max": 317, "pct_of_historical_max": 71.9, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Ōmokoroa Point School", "territorial_authority": "Western Bay of Plenty District", "total_students": 339, "change_pct": -0.3, "moving_avg_3yr": 339.0, "historical_max": 340, "pct_of_historical_max": 99.7, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Ōtūmoetai College", "territorial_authority": "Tauranga City", "total_students": 1996, "change_pct": 0.8, "moving_avg_3yr": 1951.0, "historical_max": 1996, "pct_of_historical_max": 100.0, "at_or_above_max": 1, "n_years_available": 16}, {"school_name": "Ōtūmoetai Intermediate", "territorial_authority": "Tauranga City", "total_students": 906, "change_pct": -0.5, "moving_avg_3yr": 917.0, "historical_max": 935, "pct_of_historical_max": 96.9, "at_or_above_max": 0, "n_years_available": 16}, {"school_name": "Ōtūmoetai Primary School", "territorial_authority": "Tauranga City", "total_students": 534, "change_pct": -5.2, "moving_avg_3yr": 550.0, "historical_max": 575, "pct_of_historical_max": 92.9, "at_or_above_max": 0, "n_years_available": 16}]};
+const fmt = (n) => n === null || n === undefined ? "n/a" : Math.round(n).toLocaleString('en-NZ');
+const fmtPct = (n, withSign) => {
+  if (n === null || n === undefined) return "n/a";
+  const s = (withSign && n > 0 ? "+" : "") + n.toFixed(1) + "%";
+  return s;
+};
+const root = document.documentElement;
+const toggleBtn = document.getElementById('themeToggle');
+function applyThemeLabel() {
+  const isDark = root.getAttribute('data-theme') === 'dark' ||
+    (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  toggleBtn.textContent = isDark ? 'Light mode' : 'Dark mode';
+}
+toggleBtn.addEventListener('click', () => {
+  const cur = root.getAttribute('data-theme');
+  const isDarkNow = cur === 'dark' || (!cur && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  root.setAttribute('data-theme', isDarkNow ? 'light' : 'dark');
+  applyThemeLabel();
+});
+applyThemeLabel();
+
+const tooltip = document.getElementById('tooltip');
+function showTooltip(x, y, html) {
+  tooltip.innerHTML = html;
+  tooltip.style.left = (x + 14) + 'px';
+  tooltip.style.top = (y + 10) + 'px';
+  tooltip.style.opacity = '1';
+}
+function hideTooltip() { tooltip.style.opacity = '0'; }
+
+// ---------- KPI row ----------
+const kpiRow = document.getElementById('kpiRow');
+const yoy = DATA.region_yoy_pct;
+const kpis = [
+  { label: 'Schools in the region', value: DATA.n_schools, note: '7 TAs &middot; Bay of Plenty-Waiariki' },
+  { label: DATA.latest_year + ' total roll', value: fmt(DATA.region_latest_total), note: 'sum of the ' + DATA.n_schools + ' schools' },
+  { label: 'Region year-over-year change', value: fmtPct(yoy, true), note: 'vs ' + (DATA.latest_year - 1), cls: yoy > 0 ? 'pos' : (yoy < 0 ? 'neg' : '') },
+  { label: 'Schools under capacity pressure', value: DATA.n_at_capacity_latest, note: 'at/above historical max, ' + DATA.latest_year, cls: 'neg' },
+  { label: 'Cohort retention (avg.)', value: fmtPct(DATA.cohort_avg_change_pct, true), note: DATA.cohort_n_negative + ' of ' + DATA.cohort_n_total + ' schools declined', cls: DATA.cohort_avg_change_pct >= 0 ? 'pos' : 'neg' },
+];
+kpiRow.innerHTML = kpis.map(k => `
+  <div class="kpi">
+    <div class="label">${k.label}</div>
+    <div class="value ${k.cls||''}">${k.value}</div>
+    <div class="note">${k.note}</div>
+  </div>`).join('');
+
+// ---------- helpers: SVG scales ----------
+function makeScale(domain, range) {
+  const [d0, d1] = domain, [r0, r1] = range;
+  return (v) => r0 + (v - d0) / (d1 - d0 || 1) * (r1 - r0);
+}
+
+// ---------- Trend line chart ----------
+(function renderTrend() {
+  const el = document.getElementById('trendChart');
+  const rows = DATA.region_trend;
+  const W = 1100, H = 280, M = { t: 16, r: 16, b: 28, l: 54 };
+  const years = rows.map(r => r.year);
+  const totals = rows.map(r => r.total);
+  const avgs = rows.map(r => r.moving_avg_3yr);
+  const x = makeScale([years[0], years[years.length-1]], [M.l, W - M.r]);
+  const yMax = Math.max(...totals, ...avgs) * 1.08;
+  const yMin = Math.min(...totals, ...avgs) * 0.92;
+  const y = makeScale([yMin, yMax], [H - M.b, M.t]);
+
+  const linePath = (vals) => vals.map((v,i) => (i===0?'M':'L') + x(years[i]).toFixed(1) + ',' + y(v).toFixed(1)).join(' ');
+
+  const yTicks = 4;
+  let gridSvg = '';
+  for (let i=0;i<=yTicks;i++){
+    const v = yMin + (yMax-yMin)*i/yTicks;
+    const yy = y(v);
+    gridSvg += `<line class="gridline" x1="${M.l}" x2="${W-M.r}" y1="${yy.toFixed(1)}" y2="${yy.toFixed(1)}"/>`;
+    gridSvg += `<text class="axis-label" x="${M.l-8}" y="${(yy+3).toFixed(1)}" text-anchor="end">${Math.round(v).toLocaleString('en-NZ')}</text>`;
+  }
+  let xTicks = '';
+  years.forEach((yr,i) => {
+    if (i % 2 === 0) xTicks += `<text class="axis-label" x="${x(yr).toFixed(1)}" y="${H-8}" text-anchor="middle">${yr}</text>`;
+  });
+
+  let dots = '';
+  years.forEach((yr,i) => {
+    dots += `<circle class="hover-dot" data-i="${i}" cx="${x(yr).toFixed(1)}" cy="${y(totals[i]).toFixed(1)}" r="9" fill="transparent"/>`;
+  });
+
+  // Callout: 2022 dip
+  let calloutSvg = '';
+  const dipIdx = years.indexOf(2022);
+  if (dipIdx > -1) {
+    const cx = x(years[dipIdx]), cy = y(totals[dipIdx]);
+    const labelY = Math.max(cy - 34, M.t + 10);
+    calloutSvg = `<g class="chart-callout">
+      <line x1="${cx.toFixed(1)}" x2="${cx.toFixed(1)}" y1="${(cy-8).toFixed(1)}" y2="${(labelY+10).toFixed(1)}"/>
+      <rect x="${(cx-34).toFixed(1)}" y="${(labelY-12).toFixed(1)}" width="68" height="16" rx="4"/>
+      <text x="${cx.toFixed(1)}" y="${labelY.toFixed(1)}" text-anchor="middle">2022 dip</text>
+    </g>`;
+  }
+
+  el.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}">
+    ${gridSvg}
+    <line class="baseline" x1="${M.l}" x2="${W-M.r}" y1="${H-M.b}" y2="${H-M.b}"/>
+    <path d="${linePath(avgs)}" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-dasharray="4 4"/>
+    <path d="${linePath(totals)}" fill="none" stroke="var(--series-1)" stroke-width="2.5"/>
+    ${xTicks}
+    ${calloutSvg}
+    <g id="trendHoverLine" style="opacity:0"><line class="hover-line" x1="0" x2="0" y1="${M.t}" y2="${H-M.b}"/></g>
+    ${dots}
+  </svg>`;
+
+  const svg = el.querySelector('svg');
+  const hoverLine = el.querySelector('#trendHoverLine');
+  svg.querySelectorAll('.hover-dot').forEach(dot => {
+    dot.addEventListener('mouseenter', (e) => {
+      const i = +dot.dataset.i;
+      hoverLine.style.opacity = '1';
+      hoverLine.querySelector('line').setAttribute('x1', dot.getAttribute('cx'));
+      hoverLine.querySelector('line').setAttribute('x2', dot.getAttribute('cx'));
+      const rect = dot.getBoundingClientRect();
+      showTooltip(rect.left + window.scrollX, rect.top + window.scrollY, `
+        <div class="t-title">${years[i]}</div>
+        <div class="t-row"><span class="swatch" style="background:var(--series-1)"></span>Total: <strong>&nbsp;${fmt(totals[i])}</strong></div>
+        <div class="t-row"><span class="swatch" style="background:var(--text-muted)"></span>3yr avg: <strong>&nbsp;${fmt(avgs[i])}</strong></div>
+      `);
+    });
+    dot.addEventListener('mouseleave', () => { hoverLine.style.opacity = '0'; hideTooltip(); });
+  });
+})();
+
+// ---------- TA stacked area chart ----------
+(function renderTA() {
+  const el = document.getElementById('taChart');
+  const legendEl = document.getElementById('taLegend');
+  const tas = DATA.ta_list;
+  const years = DATA.ta_years;
+  const series = DATA.ta_share_series;
+  const colors = ['var(--series-1)','var(--series-2)','var(--series-3)','var(--series-4)','var(--series-5)','var(--series-6)','var(--series-7)','var(--series-8)'];
+
+  const W = 1100, H = 300, M = { t: 16, r: 16, b: 28, l: 54 };
+  const x = makeScale([years[0], years[years.length-1]], [M.l, W - M.r]);
+  const totals = years.map((yr,i) => tas.reduce((s,ta) => s + (series[ta][i]||0), 0));
+  const yMax = Math.max(...totals) * 1.08;
+  const y = makeScale([0, yMax], [H - M.b, M.t]);
+
+  // build stacked layers
+  const layers = [];
+  let cum = years.map(() => 0);
+  tas.forEach((ta) => {
+    const bottom = cum.slice();
+    cum = cum.map((c,i) => c + (series[ta][i]||0));
+    layers.push({ ta, bottom, top: cum.slice() });
+  });
+
+  const areaPath = (bottom, top) => {
+    let d = 'M' + x(years[0]).toFixed(1) + ',' + y(bottom[0]).toFixed(1);
+    years.forEach((yr,i) => { if(i>0) d += ' L' + x(yr).toFixed(1) + ',' + y(bottom[i]).toFixed(1); });
+    for (let i = years.length-1; i>=0; i--) d += ' L' + x(years[i]).toFixed(1) + ',' + y(top[i]).toFixed(1);
+    d += ' Z';
+    return d;
+  };
+
+  let yTicksSvg = '';
+  for (let i=0;i<=4;i++){
+    const v = yMax*i/4;
+    const yy = y(v);
+    yTicksSvg += `<line class="gridline" x1="${M.l}" x2="${W-M.r}" y1="${yy.toFixed(1)}" y2="${yy.toFixed(1)}"/>`;
+    yTicksSvg += `<text class="axis-label" x="${M.l-8}" y="${(yy+3).toFixed(1)}" text-anchor="end">${Math.round(v).toLocaleString('en-NZ')}</text>`;
+  }
+  let xTicks = '';
+  years.forEach((yr,i) => { if (i%2===0) xTicks += `<text class="axis-label" x="${x(yr).toFixed(1)}" y="${H-8}" text-anchor="middle">${yr}</text>`; });
+
+  let areasSvg = layers.map((l,li) => `<path d="${areaPath(l.bottom,l.top)}" fill="${colors[li]}" opacity="0.88" stroke="var(--surface-1)" stroke-width="1"/>`).join('');
+
+  let hitCols = years.map((yr,i) => `<rect class="hover-col" data-i="${i}" x="${(x(yr)-18).toFixed(1)}" y="${M.t}" width="36" height="${H-M.t-M.b}" fill="transparent"/>`).join('');
+
+  // Callout: label the Tauranga City band, which drives most of the region's growth
+  let calloutSvg = '';
+  const tcIdx = tas.indexOf('Tauranga City');
+  if (tcIdx > -1) {
+    const labelYearIdx = Math.max(0, years.length - 4);
+    const layer = layers[tcIdx];
+    const midVal = (layer.bottom[labelYearIdx] + layer.top[labelYearIdx]) / 2;
+    const cx = x(years[labelYearIdx]), cy = y(midVal);
+    const label = 'Tauranga City: +34% since 2010';
+    const boxW = 168;
+    calloutSvg = `<g class="chart-callout">
+      <rect x="${(cx-boxW/2).toFixed(1)}" y="${(cy-9).toFixed(1)}" width="${boxW}" height="18" rx="4"/>
+      <text x="${cx.toFixed(1)}" y="${(cy+4).toFixed(1)}" text-anchor="middle">${label}</text>
+    </g>`;
+  }
+
+  el.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}">
+    ${yTicksSvg}
+    <line class="baseline" x1="${M.l}" x2="${W-M.r}" y1="${H-M.b}" y2="${H-M.b}"/>
+    ${areasSvg}
+    ${xTicks}
+    ${calloutSvg}
+    <g id="taHoverLine" style="opacity:0"><line class="hover-line" x1="0" x2="0" y1="${M.t}" y2="${H-M.b}"/></g>
+    ${hitCols}
+  </svg>`;
+
+  legendEl.innerHTML = tas.map((ta,i) => `<span class="item"><span class="swatch" style="background:${colors[i]}"></span>${ta}</span>`).join('');
+
+  const svg = el.querySelector('svg');
+  const hoverLine = el.querySelector('#taHoverLine');
+  svg.querySelectorAll('.hover-col').forEach(col => {
+    col.addEventListener('mouseenter', (e) => {
+      const i = +col.dataset.i;
+      const xpos = x(years[i]);
+      hoverLine.style.opacity = '1';
+      hoverLine.querySelector('line').setAttribute('x1', xpos);
+      hoverLine.querySelector('line').setAttribute('x2', xpos);
+      const rect = col.getBoundingClientRect();
+      let rowsHtml = tas.map((ta,ti) => `<div class="t-row"><span class="swatch" style="background:${colors[ti]}"></span>${ta}: <strong>&nbsp;${fmt(series[ta][i])}</strong></div>`).join('');
+      showTooltip(rect.left + window.scrollX, rect.top + window.scrollY, `<div class="t-title">${years[i]}</div>${rowsHtml}`);
+    });
+    col.addEventListener('mouseleave', () => { hoverLine.style.opacity = '0'; hideTooltip(); });
+  });
+})();
+
+// ---------- Growth diverging bar chart ----------
+(function renderGrowth() {
+  const el = document.getElementById('growthChart');
+  const combined = DATA.bottom_growth.slice().reverse().concat(DATA.top_growth.slice().reverse());
+  const W = 1100, rowH = 22, M = { t: 8, r: 70, b: 8, l: 280 };
+  const H = combined.length * rowH + M.t + M.b;
+  const maxAbs = Math.max(...combined.map(r => Math.abs(r.growth_pct))) * 1.1;
+  const midX = M.l + (W - M.l - M.r) / 2;
+  const x = makeScale([-maxAbs, maxAbs], [M.l, W - M.r]);
+
+  let bars = '';
+  combined.forEach((r, i) => {
+    const yy = M.t + i * rowH;
+    const isPos = r.growth_pct >= 0;
+    const x0 = x(0), x1 = x(r.growth_pct);
+    const barX = Math.min(x0, x1), barW = Math.abs(x1 - x0);
+    bars += `<rect class="growth-bar" data-i="${i}" x="${barX.toFixed(1)}" y="${(yy+3).toFixed(1)}" width="${barW.toFixed(1)}" height="${rowH-7}" rx="3" fill="${isPos?'var(--div-pos)':'var(--div-neg)'}"/>`;
+    bars += `<text class="axis-label" x="${M.l-10}" y="${(yy+rowH/2+3).toFixed(1)}" text-anchor="end" fill="var(--text-secondary)" style="font-size:11.5px">${r.school_name}</text>`;
+    const labelX = isPos ? x1 + 6 : x1 - 6;
+    bars += `<text class="axis-label" x="${labelX.toFixed(1)}" y="${(yy+rowH/2+3).toFixed(1)}" text-anchor="${isPos?'start':'end'}" style="font-size:11.5px;fill:var(--text-primary)">${(r.growth_pct>0?'+':'')+r.growth_pct.toFixed(1)}%</text>`;
+  });
+
+  el.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}">
+    <line class="baseline" x1="${midX.toFixed(1)}" x2="${midX.toFixed(1)}" y1="${M.t}" y2="${H-M.b}"/>
+    ${bars}
+  </svg>`;
+
+  const svg = el.querySelector('svg');
+  svg.querySelectorAll('.growth-bar').forEach(bar => {
+    bar.addEventListener('mouseenter', (e) => {
+      const i = +bar.dataset.i;
+      const r = combined[i];
+      const rect = bar.getBoundingClientRect();
+      showTooltip(rect.left + window.scrollX, rect.top + window.scrollY, `
+        <div class="t-title">${r.school_name} &middot; ${r.territorial_authority}</div>
+        <div class="t-row">${r.latest_year}: <strong>&nbsp;${fmt(r.total_students)}</strong> students</div>
+        <div class="t-row">Change: <strong>&nbsp;${(r.growth_pct>0?'+':'')+r.growth_pct.toFixed(1)}%</strong></div>
+      `);
+    });
+    bar.addEventListener('mouseleave', hideTooltip);
+  });
+})();
+
+// ---------- Generic sortable/searchable table builder ----------
+function buildTable(tableId, searchId, rows, colDefs, rowClassFn) {
+  const table = document.getElementById(tableId);
+  const tbody = table.querySelector('tbody');
+  const searchInput = searchId ? document.getElementById(searchId) : null;
+  let sortKey = null, sortDir = 1;
+
+  function render() {
+    let data = rows;
+    if (searchInput && searchInput.value.trim()) {
+      const q = searchInput.value.trim().toLowerCase();
+      data = data.filter(r => (r.school_name||'').toLowerCase().includes(q) || (r.territorial_authority||'').toLowerCase().includes(q));
+    }
+    if (sortKey) {
+      data = data.slice().sort((a,b) => {
+        const av = a[sortKey], bv = b[sortKey];
+        if (av === null || av === undefined) return 1;
+        if (bv === null || bv === undefined) return -1;
+        if (typeof av === 'number') return (av - bv) * sortDir;
+        return String(av).localeCompare(String(bv)) * sortDir;
+      });
+    }
+    tbody.innerHTML = data.map(r => {
+      const cls = rowClassFn ? rowClassFn(r) : '';
+      const cells = colDefs.map(c => `<td class="${c.num?'num':''} ${c.cls?c.cls(r):''}">${c.render(r)}</td>`).join('');
+      return `<tr class="${cls}">${cells}</tr>`;
+    }).join('');
+  }
+
+  table.querySelectorAll('th[data-key]').forEach(th => {
+    th.addEventListener('click', () => {
+      const key = th.dataset.key;
+      if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
+      render();
+    });
+  });
+  if (searchInput) searchInput.addEventListener('input', render);
+  render();
+}
+
+// Pressure table
+buildTable('pressureTable', 'pressureSearch', DATA.pressure_latest, [
+  { render: r => r.school_name },
+  { render: r => r.territorial_authority },
+  { num: true, render: r => r.roll_year },
+  { num: true, render: r => fmt(r.total_students) },
+  { num: true, render: r => fmt(r.historical_max) },
+  { num: true, render: r => `<span class="badge critical">${r.pct_of_historical_max.toFixed(0)}%</span>` },
+  { num: true, render: r => r.n_years_available },
+]);
+
+// Cohort table
+buildTable('cohortTable', 'cohortSearch', DATA.cohort_rows, [
+  { render: r => r.school_name },
+  { render: r => r.territorial_authority },
+  { num: true, render: r => fmt(r.year5_2020_count) },
+  { num: true, render: r => fmt(r.year6_2021_count) },
+  { num: true, cls: r => r.change_pct >= 0 ? 'delta pos' : 'delta neg', render: r => (r.change_pct>0?'+':'')+r.change_pct.toFixed(1)+'%' },
+]);
+document.getElementById('cohortAvg').textContent = (DATA.cohort_avg_change_pct>0?'+':'')+DATA.cohort_avg_change_pct.toFixed(1)+'%';
+document.getElementById('cohortNeg').textContent = DATA.cohort_n_negative;
+
+// Main school table
+buildTable('schoolTable', 'schoolSearch', DATA.school_table, [
+  { render: r => r.school_name },
+  { render: r => r.territorial_authority },
+  { num: true, render: r => fmt(r.total_students) },
+  { num: true, cls: r => r.change_pct >= 0 ? 'delta pos' : 'delta neg', render: r => r.change_pct===null?'n/a':(r.change_pct>0?'+':'')+r.change_pct.toFixed(1)+'%' },
+  { num: true, render: r => fmt(r.moving_avg_3yr) },
+  { num: true, render: r => r.pct_of_historical_max===undefined||r.pct_of_historical_max===null?'n/a':r.pct_of_historical_max.toFixed(0)+'%' },
+  { render: r => r.at_or_above_max === 1 ? '<span class="badge critical">pressure</span>' : '<span class="badge good">normal</span>' },
+]);
+</script>
+</body>
+</html>

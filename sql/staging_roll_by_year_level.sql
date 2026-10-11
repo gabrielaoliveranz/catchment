@@ -45,7 +45,7 @@ WITH (
     FIRSTROW = 2,               -- skip row 1 (the header)
     FIELDQUOTE = '"',           -- values wrapped in "..." count as one field, even with a comma inside
     FIELDTERMINATOR = ',',      -- comma separates one column from the next
-    ROWTERMINATOR = '\n',       -- marks the end of each row (see METHODOLOGY.md — \r\n failed, \n worked)
+    ROWTERMINATOR = '\n',       -- marks the end of each row (see METHODOLOGY.md, \r\n failed, \n worked)
     CODEPAGE = '65001',         -- read the file as UTF-8, so macrons (e.g. Māori) load correctly
     BATCHSIZE = 50000,          -- load in chunks of 50k rows instead of one giant transaction
     TABLOCK                     -- lock the whole table during load, for faster bulk performance

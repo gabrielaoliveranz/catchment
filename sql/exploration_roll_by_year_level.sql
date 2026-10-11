@@ -2,8 +2,7 @@
 -- Author: Gabriela Olivera | CATCHMENT
 -- DB: Catchment (SQL Server, localhost\gabyg)
 -- Purpose: scratch queries to inspect staging_roll_by_year_level after
---          the load. Not meant to run top-to-bottom as a build step —
---          see sql/staging_roll_by_year_level.sql for that.
+--          the load. Not meant to run top-to-bottom as a build step, --          see sql/staging_roll_by_year_level.sql for that.
 
 -- Quick look at the first 100 rows loaded, to sanity-check that columns
 -- line up with the CSV header and the order makes sense.
@@ -17,7 +16,7 @@ FROM staging_roll_by_year_level;
 
 -- Check: trailing \r on equi_group (BULK INSERT used ROWTERMINATOR = '\n'
 -- but the file's real line ending is \r\n).
--- Resolved: no stray \r found — see METHODOLOGY.md.
+-- Resolved: no stray \r found, see METHODOLOGY.md.
 
 SELECT TOP (20) equi_group, LEN(equi_group), ASCII(RIGHT(equi_group, 1))
 FROM staging_roll_by_year_level;
@@ -28,7 +27,7 @@ FROM staging_roll_by_year_level
 WHERE equi_group IS NOT NULL;
 
 -- Check: is equi_band/equi_group null only for years before 2023?
--- Resolved: NULL 2016-2018, populated 2019-2025 — see METHODOLOGY.md.
+-- Resolved: NULL 2016-2018, populated 2019-2025, see METHODOLOGY.md.
 
 SELECT  year_as_at_1_july, COUNT(*)AS total_count, COUNT (equi_band) AS equi_band, COUNT (equi_group) AS equi_group
 FROM staging_roll_by_year_level
@@ -38,14 +37,14 @@ ORDER BY year_as_at_1_july;
 
 -- Check: is student_age null across the WHOLE table (all 709,153 rows),
 -- not just this 100-row sample?
--- Resolved: yes — NULL in all 709,153 rows, 100% of the table.
+-- Resolved: yes, NULL in all 709,153 rows, 100% of the table.
 
 SELECT COUNT (*) total_count, COUNT (student_age) AS student_age
 FROM staging_roll_by_year_level;
 
 
 -- Check: duplicate rows for school + year + year level + ethnicity?
--- Resolved: no duplicates — see METHODOLOGY.md.
+-- Resolved: no duplicates, see METHODOLOGY.md.
 
 SELECT 
  (SELECT COUNT(*) FROM staging_roll_by_year_level) AS total_count,
@@ -55,7 +54,7 @@ FROM (
     FROM staging_roll_by_year_level
 ) AS combos;
 
--- Column list + declared type/length from the system catalog — used to
+-- Column list + declared type/length from the system catalog, used to
 -- plan the truncation and macron checks below.
 
 SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH
@@ -65,7 +64,7 @@ ORDER BY ORDINAL_POSITION;
 
 -- Check: any value truncated by NVARCHAR(255)? (MAX(LEN(col)) near 255
 -- would be suspicious.)
--- Resolved: no risk — longest value is school_name at 60 chars.
+-- Resolved: no risk, longest value is school_name at 60 chars.
 -- (Built with SSMS Find & Replace + regex instead of typing 23 lines
 -- by hand: ^(.+)$ → MAX(LEN($1)) AS $1,)
 
@@ -131,7 +130,7 @@ FROM staging_roll_by_year_level;
 
 -- Check: does the macron in "Māori" hold the correct Unicode code point
 -- (257 = "ā") across every matching row, not just visually?
--- Resolved: single group, 257, across all 166,987 matching rows — no
+-- Resolved: single group, 257, across all 166,987 matching rows, no
 -- corrupted rows mixed in.
 
 SELECT 

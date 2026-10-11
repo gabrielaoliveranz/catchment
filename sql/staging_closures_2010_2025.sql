@@ -3,7 +3,7 @@
 -- DB: Catchment (SQL Server, localhost\gabyg)
 -- Purpose: raw 1:1 load of the "Closures" sheet combined across 16 yearly
 --          workbooks (2010-2025), no transformation/types/constraints.
---          Scoped to 2010-2025 only — see docs/METHODOLOGY.md.
+--          Scoped to 2010-2025 only, see docs/METHODOLOGY.md.
 --          Of 248 generic "F" columns found on expand (Excel's inflated
 --          used-range artifact, same issue as source #4a), only F11 and
 --          F13 had any real data and were kept; the rest were 100% empty
@@ -25,8 +25,8 @@ CREATE TABLE staging_closures_2010_2025 (
 	effective_month     NVARCHAR(255),   -- "Closures Data.Effective _Month"
 	effective_year      NVARCHAR(255),   -- "Closures Data.Effective _Year"
 	reason_for_closure  NVARCHAR(255),   -- "Closures Data.Reason for Closure"
-	f11                 NVARCHAR(255),   -- "Closures Data.F11" — content not yet identified
-	f13                 NVARCHAR(255),   -- "Closures Data.F13" — content not yet identified
+	f11                 NVARCHAR(255),   -- "Closures Data.F11", content not yet identified
+	f13                 NVARCHAR(255),   -- "Closures Data.F13", content not yet identified
 	notes               NVARCHAR(255),   -- "Closures Data.Notes"
 	event_year          NVARCHAR(255)    -- "Year" (extracted from source filename)
 );
@@ -44,7 +44,7 @@ WITH (
 GO
 
 -- Cleanup: same Excel "used range" padding-row issue as source #4a/#4b's
--- "New" table — not a business-logic exclusion, completes the raw load.
+-- "New" table, not a business-logic exclusion, completes the raw load.
 DELETE FROM staging_closures_2010_2025 WHERE school_no IS NULL;
 GO
 -- Cleanup: boilerplate footer text ("School contact details available at:")

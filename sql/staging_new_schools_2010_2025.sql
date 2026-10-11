@@ -3,7 +3,7 @@
 -- DB: Catchment (SQL Server, localhost\gabyg)
 -- Purpose: raw 1:1 load of the "New" sheet combined across 16 yearly
 --          workbooks (2010-2025), no transformation/types/constraints.
---          Scoped to 2010-2025 only — see docs/METHODOLOGY.md for why
+--          Scoped to 2010-2025 only, see docs/METHODOLOGY.md for why
 --          2004-2009 were excluded (inconsistent sheet structure).
 --          "F9"/"F10"/"F11"/"F13" are Power Query's generic names for
 --          source columns with no clear header in some years' files;
@@ -24,10 +24,10 @@ CREATE TABLE staging_new_schools_2010_2025 (
 	effective_day    NVARCHAR(255),   -- "New Data.Effective _Day"
 	effective_month  NVARCHAR(255),   -- "New Data.Effective _Month"
 	effective_year   NVARCHAR(255),   -- "New Data.Effective _Year"
-	notes            NVARCHAR(255),   -- "New Data.F9" — confirmed: free-text notes
-	f10              NVARCHAR(255),   -- "New Data.F10" — content not yet identified
-	f11              NVARCHAR(255),   -- "New Data.F11" — content not yet identified
-	f13              NVARCHAR(255),   -- "New Data.F13" — content not yet identified
+	notes            NVARCHAR(255),   -- "New Data.F9", confirmed: free-text notes
+	f10              NVARCHAR(255),   -- "New Data.F10", content not yet identified
+	f11              NVARCHAR(255),   -- "New Data.F11", content not yet identified
+	f13              NVARCHAR(255),   -- "New Data.F13", content not yet identified
 	event_year       NVARCHAR(255)    -- "Year" (extracted from source filename)
 );
 GO
@@ -43,8 +43,7 @@ WITH (
 );
 GO
 
--- Cleanup: same Excel "used range" padding-row issue as source #4a —
--- removing it here completes the raw load, it isn't a business-logic
+-- Cleanup: same Excel "used range" padding-row issue as source #4a, -- removing it here completes the raw load, it isn't a business-logic
 -- exclusion. See docs/METHODOLOGY.md.
 DELETE FROM staging_new_schools_2010_2025 WHERE school_no IS NULL;
 GO
