@@ -23,9 +23,6 @@
 --   unrelated to capacity. This query surfaces the raw retention number;
 --   it does not attempt to separate those causes.
 --
--- Built with Claude via direct computer-use control in SSMS, one-time
--- exception to the "I write every query" contract granted 2026-10-11.
-
 USE Catchment;
 GO
 

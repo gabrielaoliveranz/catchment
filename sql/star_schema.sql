@@ -17,10 +17,6 @@
 -- this richer grain, since it serves the 6 planned window-function
 -- analyses better. This means fact_roll has no data for 2010-2013.
 --
--- Built 2026-10-11 with Claude via direct computer-use control in
--- SSMS (explicit one-time exception to the "I write every query"
--- learning contract for this project, granted for time pressure).
-
 USE Catchment;
 GO
 

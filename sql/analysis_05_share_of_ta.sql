@@ -14,9 +14,6 @@
 --   fact_roll. Using source #1 for both numerator and denominator avoids
 --   that problem entirely here (no ethnicity dimension involved at all).
 --
--- Built with Claude via direct computer-use control in SSMS, one-time
--- exception to the "I write every query" contract granted 2026-10-11.
-
 USE Catchment;
 GO
 

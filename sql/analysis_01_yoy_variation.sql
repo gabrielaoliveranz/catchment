@@ -20,10 +20,6 @@
 --   split to worry about. It also covers 2010-2025 (fact_roll only has
 --   2014-2025), so this query sees 6 extra years of history per school.
 --
--- Built with Claude via direct computer-use control in SSMS, one-time
--- exception to the "I write every query" contract granted 2026-10-11
--- for time pressure (Gaby wrapping up the project same day).
-
 USE Catchment;
 GO
 

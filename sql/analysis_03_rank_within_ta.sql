@@ -20,9 +20,6 @@
 --   analysis_01.sql re: the total-response ethnicity overcount in
 --   fact_roll.
 --
--- Built with Claude via direct computer-use control in SSMS, one-time
--- exception to the "I write every query" contract granted 2026-10-11.
-
 USE Catchment;
 GO
 

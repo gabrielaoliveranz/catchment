@@ -18,9 +18,6 @@
 --   downstream (Power BI) if partial-window rows shouldn't be shown as a
 --   real "3-year" average.
 --
--- Built with Claude via direct computer-use control in SSMS, one-time
--- exception to the "I write every query" contract granted 2026-10-11.
-
 USE Catchment;
 GO
 
