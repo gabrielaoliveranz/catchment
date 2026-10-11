@@ -705,3 +705,85 @@ the clean row with the same `school_no`.
 in staging, #2 and #3 are documented and deferred to the exploration
 stage (same convention as the pseudo-total exclusion in source #1: raw
 in staging, visible exclusion logic later in SQL).
+
+## Star schema build (2026-10-11)
+
+With all staging tables loaded (source #1 school rolls, source #2 roll
+by year level/ethnicity, source #3 directory, source #4b historical
+school changes), built the full star schema: `dim_area`, `dim_school`,
+`dim_year`, `dim_year_level`, `dim_ethnicity`, `fact_roll`,
+`school_status_history`. Full DDL + population script:
+`sql/star_schema.sql`.
+
+**`fact_roll` grain decision.** Two options were on the table: a simple
+`school + year` total-roll grain from source #1 (covers the full
+2010-2025 range, no breakdown) vs. a `school + year + year_level +
+ethnicity` grain from source #2's `staging_roll_by_year_level` (only
+covers 2014-2025, but supports the planned year-level and ethnicity
+trend analyses much better). Went with the richer grain — `fact_roll`
+is 2014-2025 only, with no data for 2010-2013. `student_age`, present
+in the source but not part of the chosen grain, is summed away via
+`GROUP BY` + `SUM(students_values)`.
+
+**`dim_school` is type-1 (current attributes only), not type-2.**
+Historical changes — mergers, closures, name/type changes — are not
+tracked as slowly-changing dimension history on `dim_school` itself;
+they live separately in `school_status_history`, built as a straight
+union of the 5 source #4b staging tables (New, Closures, Mergers, Name
+Changes, School Type Changes). The dual header-variant columns already
+documented above (`effective_day` vs `effective_day_2`, `school_no` vs
+`school_no_2` for type changes) are resolved with `COALESCE` at this
+stage.
+
+**Two real bugs hit while building this (not the usual Power Query
+performance traps — actual data-truncation failures):**
+
+1. **`dim_school.donations` truncation.** First pass defined
+   `donations NVARCHAR(50)`, assuming it held a short code.
+   `staging_directory.donations` actually holds full sentences (e.g.
+   *"Donations should not be requested, unless for a specific
+   purpose..."*). SQL Server's `Msg 2628` truncation error aborted the
+   whole `INSERT INTO dim_school` statement silently (no rows loaded),
+   which in turn made the `fact_roll` load's join to `dim_school` match
+   nothing — and because that join sat behind an unindexed scan over
+   ~709k staging rows, it looked like a hang (2.5 minutes, cancelled)
+   rather than an obvious empty-table error. Fixed by widening
+   `dim_school`'s free-text columns generously (`NVARCHAR(500)`/`(255)`)
+   rather than guessing a "safe" short width per column.
+2. **`school_status_history` text-column truncation**, same root cause
+   as the closures footer-text issue documented above, but showing up
+   in different columns this time (junk text landing in `school_no`,
+   `event_year`, `effective_month` across 3 of the 5 source tables).
+   Fixed the same way: widened every text column on
+   `school_status_history` to `NVARCHAR(255)`/`(500)` and left the junk
+   rows in place raw, rather than chasing down each instance — same
+   "filter visibly at the query stage" convention used for the other
+   source #4b data-quality issues above. Anyone querying this table
+   should expect a handful of junk rows.
+
+**Performance note on the `fact_roll` load.** The join from
+`staging_roll_by_year_level` (~709k rows) to `dim_school`,
+`dim_year_level` and `dim_ethnicity` on text columns needs indexes on
+those lookup columns — without `UX_dim_school_school_no`,
+`IX_dim_year_level_lookup` and `IX_dim_ethnicity_lookup` (all created in
+`star_schema.sql` right after the `CREATE TABLE`s), the load was still
+running after 2.5 minutes and had to be cancelled; with the indexes in
+place, the same load completed in about 20 seconds.
+
+**Final row counts:**
+
+| Table | Rows |
+|---|---|
+| `dim_area` | 2,234 |
+| `dim_school` | 2,578 |
+| `dim_year` | 16 |
+| `dim_year_level` | 16 |
+| `dim_ethnicity` | 8 |
+| `fact_roll` | 703,080 |
+| `school_status_history` | 3,383 (410 New, 583 Merger, 916 Name Change, 682 Type Change, 792 Closure) |
+
+**Note on how this was built.** For this specific session, under time
+pressure, Gaby asked Claude to write and execute the SQL directly via
+computer-use control in SSMS rather than her typing it herself — a
+one-time exception to this project's "I write every query" learning
+contract, made explicitly and only for this piece of work.

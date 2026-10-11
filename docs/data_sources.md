@@ -46,3 +46,12 @@ not loaded** after a severe Excel "used range" performance problem (row
 counts exceeded 30 million before cleanup) and a check that none of the
 planned analyses need it. Full reasoning for both decisions is in
 `METHODOLOGY.md`.
+
+## Star schema
+
+All staging tables (sources #1-#4b) feed into a star schema built
+2026-10-11: `dim_area`, `dim_school`, `dim_year`, `dim_year_level`,
+`dim_ethnicity`, `fact_roll`, `school_status_history`. Build script:
+`sql/star_schema.sql`. Grain decision for `fact_roll`, two real bugs hit
+during the build, and final row counts are documented in
+`METHODOLOGY.md` under "Star schema build (2026-10-11)".
