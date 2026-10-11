@@ -78,4 +78,8 @@ remaining scope.
 
 ---
 
-Gabriela Olivera &middot; built with Claude as a pairing partner.
+<a href="https://gabrielaolivera.nz/"><img src="docs/logo.svg" width="180" alt="Gabriela Olivera, Data Analyst"></a>
+
+Data Analyst &middot; [gabrielaolivera.nz](https://gabrielaolivera.nz/) &middot; [LinkedIn](https://www.linkedin.com/in/gabriela-olivera-nz/) &middot; [hello@gabrielaolivera.nz](mailto:hello@gabrielaolivera.nz)
+
+Built with Claude as a pairing partner.
