@@ -8,7 +8,7 @@ Zealand, a SQL Server learning project built on real NZ Ministry of
 Education (MoE) data, end to end: raw CSVs &rarr; staging tables &rarr;
 star schema &rarr; window-function analytics &rarr; a published dashboard.
 
-**[View the live dashboard &rarr;](docs/dashboard.html)**
+**[View the live dashboard &rarr;](https://gabrielaolivera.nz/catchment/dashboard.html)**
 
 ## The question
 
