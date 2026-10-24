@@ -4,8 +4,8 @@
 *Photo by [Far Chinberdiev](https://unsplash.com/@fardevio) on [Unsplash](https://unsplash.com/photos/classroom-table-with-blue-chairs-K1-JVKnKGZc), free to use under the [Unsplash License](https://unsplash.com/license).*
 
 School roll capacity pressure in the **Bay of Plenty-Waiariki** region, New
-Zealand, a SQL Server + Power BI learning project built on real NZ Ministry
-of Education (MoE) data, end to end: raw CSVs &rarr; staging tables &rarr;
+Zealand, a SQL Server learning project built on real NZ Ministry of
+Education (MoE) data, end to end: raw CSVs &rarr; staging tables &rarr;
 star schema &rarr; window-function analytics &rarr; a published dashboard.
 
 **[View the live dashboard &rarr;](docs/dashboard.html)**
